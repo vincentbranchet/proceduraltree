@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arbre procédural 2</title>
+</head>
+
+<body>
+    <script>
+        // Objet pour stocker les propriétés de l'arbre
+        let tree = {
+            depth: 10, // Profondeur de l'arbre
+            branchLength: 100, // Longueur de la branche principale
+            branchAngle: 25, // Angle des branches
+            branchShrink: 0.75, // Rétrécissement des branches
+            leafSize: 20, // Taille des feuilles
+            leafColor: '#0f0' // Couleur des feuilles
+        };
+
+        // Fonction pour dessiner une branche
+        function branch(x, y, angle, length) {
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            let newX = x + length * Math.sin(angle * Math.PI / 180);
+            let newY = y - length * Math.cos(angle * Math.PI / 180);
+            ctx.lineTo(newX, newY);
+            ctx.stroke();
+            if (length > 5) {
+                branch(newX, newY, angle - tree.branchAngle, length * tree.branchShrink);
+                branch(newX, newY, angle + tree.branchAngle, length * tree.branchShrink);
+            } else {
+                leaf(newX, newY);
+            }
+        }
+
+        // Fonction pour dessiner une feuille
+        function leaf(x, y) {
+            ctx.fillStyle = tree.leafColor;
+            ctx.fillRect(x, y, tree.leafSize, tree.leafSize);
+        }
+
+        // Fonction principale pour dessiner l'arbre
+        function drawTree() {
+            // Dessiner la branche principale
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 10;
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            let startX = canvas.width / 2;
+            let startY = canvas.height;
+            ctx.moveTo(startX, startY);
+            ctx.lineTo(startX, startY - tree.branchLength);
+            ctx.stroke();
+
+            // Dessiner les branches et les feuilles
+            ctx.fillStyle = tree.leafColor;
+            ctx.fillRect(startX, startY - tree.branchLength, tree.leafSize, tree.leafSize);
+            branch(startX, startY - tree.branchLength, -90, tree.branchLength * tree.branchShrink);
+        }
+
+        // Initialiser le canvas
+        let canvas = document.createElement('canvas');
+        canvas.width = 800;
+        canvas.height = 600;
+        document.body.appendChild(canvas);
+        let ctx = canvas.getContext('2d');
+
+        // Dessiner l'arbre
+        drawTree();
+
+    </script>
+</body>
+
+</html>

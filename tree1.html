@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Arbre procédural 1</title>
+    <style>
+      canvas {
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: auto;
+        z-index: -1;
+      }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+        // Variables de configuration
+        const ANGLE = Math.PI / 4;
+        const BRANCH_LENGTH = 100;
+        const SHRINK_FACTOR = 0.8;
+        const MAX_DEPTH = 10;
+        const START_X = window.innerWidth / 2;
+        const START_Y = window.innerHeight;
+
+        // Variables d'animation
+        const WIND_ANGLE = Math.PI / 64;
+        const WIND_SPEED = 0.05;
+
+        // Initialisation du canevas
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // Fonction de dessin de l'arbre
+        function drawTree(x, y, length, angle, depth) {
+            if (depth === 0) {
+                return;
+            }
+
+            const endX = x + length * Math.sin(angle);
+            const endY = y + length * Math.cos(angle);
+
+            // Dessin de la branche
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(endX, endY);
+            ctx.lineWidth = depth;
+            ctx.strokeStyle = `rgb(${depth * 10}, ${depth * 10}, ${depth * 10})`;
+            ctx.stroke();
+
+            // Dessin des sous-branches avec légère variation aléatoire d'angle
+            drawTree(
+                endX,
+                endY,
+                length * SHRINK_FACTOR,
+                angle + ANGLE + (Math.random() * WIND_ANGLE - WIND_ANGLE / 2),
+                depth - 1
+            );
+            drawTree(
+                endX,
+                endY,
+                length * SHRINK_FACTOR,
+                angle - ANGLE + (Math.random() * WIND_ANGLE - WIND_ANGLE / 2),
+                depth - 1
+            );
+
+            // Dessin des feuilles pour les branches terminales
+            if (depth === 1) {
+                drawLeaf(endX, endY);
+            }
+        }
+
+        // Fonction de dessin d'une feuille
+        function drawLeaf(x, y) {
+            ctx.beginPath();
+            ctx.ellipse(
+                x,
+                y,
+                5,
+                10,
+                Math.random() * 360,
+                0,
+                2 * Math.PI
+            );
+            ctx.fillStyle = "green";
+            ctx.fill();
+        }
+
+        // Fonction d'animation de l'arbre avec le vent
+        function animateTree() {
+            // Effacer le canevas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Calculer le nouvel angle du vent
+            const windAngle = Math.sin(Date.now() * WIND_SPEED) * WIND_ANGLE;
+
+            // Dessiner l'arbre avec l'angle du vent
+            drawTree(START_X, START_Y, BRANCH_LENGTH, Math.PI + windAngle, MAX_DEPTH);
+
+            // Planifier la prochaine animation
+            requestAnimationFrame(animateTree);
+        }
+
+        // Lancer l'animation avec une graine aléatoire différente à chaque fois
+        function init() {
+            const seed = Math.random() * 100000;
+            //Math.seedrandom(seed.toString());
+            animateTree();
+        }
+
+        // Lancer l'animation à l'ouverture de la page
+        init();
+    </script>
+</body>
+
+</html>
