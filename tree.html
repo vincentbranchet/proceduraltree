@@ -10,6 +10,47 @@
 
 <body>
     <script>
+        function seedRandom(seed) {
+            const mash = createMash();
+
+            let n = 0xefc8249d;
+            let seedValue = mash(seed);
+            let state = [];
+
+            for (let i = 0; i < 4; i++) {
+                state.push(seedValue);
+                seedValue = mash(seedValue);
+            }
+
+            return function () {
+                const t = (n ^= n << 13, n ^= n >>> 17, n ^= n << 5);
+                let value = state[t >>> 0];
+                value ^= t;
+                value += mash(n++);
+                state[t >>> 0] = value;
+                return (value >>> 0) / 4294967296;
+            }
+        }
+
+        function createMash() {
+            let n = 0xefc8249d;
+
+            return function (data) {
+                data = data.toString();
+                for (let i = 0; i < data.length; i++) {
+                    n += data.charCodeAt(i);
+                    let h = 0.02519603282416938 * n;
+                    n = h >>> 0;
+                    h -= n;
+                    h *= n;
+                    n = h >>> 0;
+                    h -= n;
+                    n += h * 0x100000000;
+                }
+                return (n >>> 0) * 2.3283064365386963e-10;
+            };
+        }
+
         // Définition des paramètres de l'arbre
         const maxDepth = 12; // Profondeur maximale de l'arbre
         const branchLength = window.innerHeight / 25; // Longueur maximale des branches
@@ -27,6 +68,7 @@
         // Définition des paramètres extérieurs
         const WIND_ANGLE = Math.PI / 64;
         const WIND_SPEED = 0.05;
+        const seed = 1;
 
         // Création du canvas
         const canvas = document.createElement("canvas");
@@ -68,12 +110,12 @@
             context.strokeStyle = branchColorWithVariation;
             context.lineWidth = thickness;
             context.stroke();
-            
+
             // Dessiner une feuille
             const leafDice = Math.random() - (depth - maxDepth) / 10;
 
             if (leafDice < leafProbability) {
-                    drawLeaf(endX, endY);
+                drawLeaf(endX, endY);
             }
 
             if (depth < maxDepth) {
@@ -88,7 +130,7 @@
                 const thickness2 = thicknessDice2 < branchThickness ? thicknessDice2 : branchThickness;
                 drawTree(endX, endY, angle + branchAngleVariation, depth + 1, thickness1, dx1, dy1);
                 drawTree(endX, endY, angle - branchAngleVariation, depth + 1, thickness2, dx2, dy2);
-//angle + ANGLE + (Math.random() * WIND_ANGLE - WIND_ANGLE / 2),
+                //angle + ANGLE + (Math.random() * WIND_ANGLE - WIND_ANGLE / 2),
             }
         }
 
@@ -101,7 +143,7 @@
             const windAngle = Math.sin(Date.now() * WIND_SPEED) * WIND_ANGLE;
 
             // Dessiner l'arbre avec l'angle du vent
-            drawTree(canvas.width / 2, canvas.height, -Math.PI / 2 + windAngle, 0, branchThickness);
+            drawTree(canvas.width / 2, canvas.height, (-Math.PI / 2) + windAngle, 0, branchThickness);
 
             // Planifier la prochaine animation
             setTimeout(() => {
