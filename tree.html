@@ -36,8 +36,15 @@
         // Fonction pour dessiner une feuille à une position donnée
         function drawLeaf(x, y) {
             context.beginPath();
-            context.moveTo(x, y);
-            context.arc(x, y, leafSize / 2, 0, Math.PI * 2);
+            context.ellipse(
+                x,
+                y,
+                5,
+                10,
+                Math.random() * 360,
+                0,
+                2 * Math.PI
+            );
             context.fillStyle = leafColor;
             context.fill();
         }
