@@ -64,8 +64,8 @@
                 const dy1 = Math.sin(angle + branchAngle * (Math.random() * branchAngleVariation * 2 - branchAngleVariation)) * (branchLength * (Math.random() * branchLengthVariation + 1));
                 const dx2 = Math.cos(angle - branchAngle * (Math.random() * branchAngleVariation * 2 - branchAngleVariation)) * (branchLength * (Math.random() * branchLengthVariation + 1));
                 const dy2 = Math.sin(angle - branchAngle * (Math.random() * branchAngleVariation * 2 - branchAngleVariation)) * (branchLength * (Math.random() * branchLengthVariation + 1));
-                const thickness1 = thickness * (Math.random() * branchThicknessVariation + 1);
-                const thickness2 = thickness * (Math.random() * branchThicknessVariation + 1);
+                const thickness1 = (thickness * (Math.random() * branchThicknessVariation + 1)) < branchThickness ? thickness * (Math.random() * branchThicknessVariation + 1) : branchThickness;
+                const thickness2 = (thickness * (Math.random() * branchThicknessVariation + 1)) < branchThickness ? thickness * (Math.random() * branchThicknessVariation + 1) : branchThickness;
                 drawTree(endX, endY, angle + Math.PI / 8, depth + 1, thickness1);
                 drawTree(endX, endY, angle - Math.PI / 8, depth + 1, thickness2);
 
