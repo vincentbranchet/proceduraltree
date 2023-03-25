@@ -24,6 +24,10 @@
         const leafSize = 5; // Taille des feuilles
         const leafColor = "#007700"; // Couleur des feuilles
 
+        // Définition des paramètres extérieurs
+        const WIND_ANGLE = Math.PI / 64;
+        const WIND_SPEED = 0.05;
+
         // Création du canvas
         const canvas = document.createElement("canvas");
         canvas.width = window.innerWidth;
@@ -84,12 +88,28 @@
                 const thickness2 = thicknessDice2 < branchThickness ? thicknessDice2 : branchThickness;
                 drawTree(endX, endY, angle + branchAngleVariation, depth + 1, thickness1, dx1, dy1);
                 drawTree(endX, endY, angle - branchAngleVariation, depth + 1, thickness2, dx2, dy2);
-
+//angle + ANGLE + (Math.random() * WIND_ANGLE - WIND_ANGLE / 2),
             }
         }
 
-        // Dessiner l'arbre à partir du milieu du canvas
-        drawTree(canvas.width / 2, canvas.height, -Math.PI / 2, 0, branchThickness);
+        // Fonction d'animation de l'arbre avec le vent
+        function animateTree() {
+            // Effacer le canevas
+            context.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Calculer le nouvel angle du vent
+            const windAngle = Math.sin(Date.now() * WIND_SPEED) * WIND_ANGLE;
+
+            // Dessiner l'arbre avec l'angle du vent
+            drawTree(canvas.width / 2, canvas.height, -Math.PI / 2 + windAngle, 0, branchThickness);
+
+            // Planifier la prochaine animation
+            setTimeout(() => {
+                requestAnimationFrame(animateTree);
+            }, 1000 / 8)
+        }
+
+        animateTree();
     </script>
 </body>
 
