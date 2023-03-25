@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arbre procédural 3</title>
+</head>
+
+<body>
+    <script>
+        // Définition des paramètres de l'arbre
+        const maxDepth = 8; // Profondeur maximale de l'arbre
+        const branchLength = 100; // Longueur maximale des branches
+        const branchAngle = Math.PI / 4; // Angle de séparation des branches
+        const branchThickness = 20; // Épaisseur de la branche principale
+        const branchColor = "#663300"; // Couleur de la branche principale
+        const branchColorVariation = 20; // Variation de la couleur de la branche
+        const branchLengthVariation = 0.8; // Variation de la longueur des branches
+        const branchAngleVariation = Math.PI / 16; // Variation de l'angle de séparation des branches
+        const branchThicknessVariation = 0.7; // Variation de l'épaisseur des branches
+        const leafProbability = 0.2; // Probabilité de dessiner une feuille à l'extrémité d'une branche
+        const leafSize = 20; // Taille des feuilles
+        const leafColor = "#007700"; // Couleur des feuilles
+
+        // Création du canvas
+        const canvas = document.createElement("canvas");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        document.body.appendChild(canvas);
+
+        // Récupération du contexte de rendu
+        const context = canvas.getContext("2d");
+
+        // Fonction pour dessiner une feuille à une position donnée
+        function drawLeaf(x, y) {
+            context.beginPath();
+            context.moveTo(x, y);
+            context.arc(x, y, leafSize / 2, 0, Math.PI * 2);
+            context.fillStyle = leafColor;
+            context.fill();
+        }
+
+        // Fonction récursive pour dessiner l'arbre
+        function drawTree(x, y, angle, depth, thickness) {
+            // Dessiner la branche principale
+            context.beginPath();
+            context.moveTo(x, y);
+            const endX = x + Math.cos(angle) * (branchLength * (Math.random() * branchLengthVariation + 1));
+            const endY = y + Math.sin(angle) * (branchLength * (Math.random() * branchLengthVariation + 1));
+            const branchColorHue = parseInt(branchColor.substring(1), 16);
+            const branchColorVariationHue = Math.floor(Math.random() * branchColorVariation * 2) - branchColorVariation;
+            const branchColorHueWithVariation = (branchColorHue + branchColorVariationHue) % 360;
+            const branchColorWithVariation = `hsl(${branchColorHueWithVariation}, 50%, 30%)`;
+            context.lineTo(endX, endY);
+            context.strokeStyle = branchColorWithVariation;
+            context.lineWidth = thickness;
+            context.stroke();
+
+            if (depth < maxDepth) {
+                // Dessiner les branches suivantes
+                const dx1 = Math.cos(angle + branchAngle * (Math.random() * branchAngleVariation * 2 - branchAngleVariation)) * (branchLength * (Math.random() * branchLengthVariation + 1));
+                const dy1 = Math.sin(angle + branchAngle * (Math.random() * branchAngleVariation * 2 - branchAngleVariation)) * (branchLength * (Math.random() * branchLengthVariation + 1));
+                const dx2 = Math.cos(angle - branchAngle * (Math.random() * branchAngleVariation * 2 - branchAngleVariation)) * (branchLength * (Math.random() * branchLengthVariation + 1));
+                const dy2 = Math.sin(angle - branchAngle * (Math.random() * branchAngleVariation * 2 - branchAngleVariation)) * (branchLength * (Math.random() * branchLengthVariation + 1));
+                const thickness1 = thickness * (Math.random() * branchThicknessVariation + 1);
+                const thickness2 = thickness * (Math.random() * branchThicknessVariation + 1);
+                drawTree(endX, endY, angle + Math.PI / 8, depth + 1, thickness1);
+                drawTree(endX, endY, angle - Math.PI / 8, depth + 1, thickness2);
+
+            } else {
+                // Dessiner une feuille à l'extrémité de la branche
+                if (Math.random() < leafProbability) {
+                    drawLeaf(endX, endY);
+                }
+            }
+        }
+
+        // Dessiner l'arbre à partir du milieu du canvas
+        drawTree(canvas.width / 2, canvas.height, -Math.PI / 2, 0, branchThickness);
+
+
+    </script>
+</body>
+
+</html>
