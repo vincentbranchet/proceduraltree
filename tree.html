@@ -94,6 +94,7 @@
             context.fillStyle = leafColor;
             context.fill();
         }
+        console.log()
 
         // Fonction récursive pour dessiner l'arbre
         function drawTree(x, y, angle, depth, thickness, curveControlPointX = x, curveControlPointY = y) {
@@ -150,7 +151,8 @@
             }, 1000 / 1)
         }
 
-        animateTree();
+        //animateTree();
+        drawTree();
     </script>
 </body>
 
