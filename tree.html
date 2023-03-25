@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arbre procédural 3</title>
+    <title>Arbre procédural</title>
 </head>
 
 <body>
@@ -13,13 +13,13 @@
         // Définition des paramètres de l'arbre
         const maxDepth = 8; // Profondeur maximale de l'arbre
         const branchLength = window.innerHeight / 15; // Longueur maximale des branches
-        const branchAngle = Math.PI / 4; // Angle de séparation des branches
+        const branchAngle = Math.PI / 2; // Angle de séparation des branches
         const branchThickness = 20; // Épaisseur de la branche principale
         const branchColor = "#663300"; // Couleur de la branche principale
         const branchColorVariation = 20; // Variation de la couleur de la branche
         const branchLengthVariation = 0.9; // Variation de la longueur des branches
         const branchAngleVariation = Math.PI / 12; // Variation de l'angle de séparation des branches
-        const branchThicknessVariation = 0.5; // Variation de l'épaisseur des branches (entre 0.5 et 1)
+        const branchThicknessVariation = 0.6; // Variation de l'épaisseur des branches (0.5 = très varié, 1 = aucune variation)
         const leafProbability = 0.9; // Probabilité de dessiner une feuille à l'extrémité d'une branche
         const leafSize = 20; // Taille des feuilles
         const leafColor = "#007700"; // Couleur des feuilles
@@ -43,7 +43,7 @@
         }
 
         // Fonction récursive pour dessiner l'arbre
-        function drawTree(x, y, angle, depth, thickness) {
+        function drawTree(x, y, angle, depth, thickness, curveControlPointX = x, curveControlPointY = y) {
             // Dessiner la branche principale
             context.beginPath();
             context.moveTo(x, y);
@@ -53,23 +53,23 @@
             const branchColorVariationHue = Math.floor(Math.random() * branchColorVariation * 2) - branchColorVariation;
             const branchColorHueWithVariation = (branchColorHue + branchColorVariationHue) % 360;
             const branchColorWithVariation = `hsl(${branchColorHueWithVariation}, 50%, 30%)`;
-            context.lineTo(endX, endY);
+            context.quadraticCurveTo(curveControlPointX, curveControlPointY, endX, endY);
             context.strokeStyle = branchColorWithVariation;
             context.lineWidth = thickness;
             context.stroke();
 
             if (depth < maxDepth) {
                 // Dessiner les branches suivantes
-                const dx1 = Math.cos(angle + branchAngle * (Math.random() * branchAngleVariation * 2 - branchAngleVariation)) * (branchLength * (Math.random() * branchLengthVariation + 1));
-                const dy1 = Math.sin(angle + branchAngle * (Math.random() * branchAngleVariation * 2 - branchAngleVariation)) * (branchLength * (Math.random() * branchLengthVariation + 1));
-                const dx2 = Math.cos(angle - branchAngle * (Math.random() * branchAngleVariation * 2 - branchAngleVariation)) * (branchLength * (Math.random() * branchLengthVariation + 1));
-                const dy2 = Math.sin(angle - branchAngle * (Math.random() * branchAngleVariation * 2 - branchAngleVariation)) * (branchLength * (Math.random() * branchLengthVariation + 1));
+                const dx1 = endX + Math.cos(angle + branchAngle * (Math.random() * branchAngleVariation)) * (branchLength * (Math.random() * branchLengthVariation + 1));
+                const dy1 = endY + Math.sin(angle + branchAngle * (Math.random() * branchAngleVariation)) * (branchLength * (Math.random() * branchLengthVariation + 1));
+                const dx2 = endX + Math.cos(angle - branchAngle * (Math.random() * branchAngleVariation)) * (branchLength * (Math.random() * branchLengthVariation + 1));
+                const dy2 = endY + Math.sin(angle - branchAngle * (Math.random() * branchAngleVariation)) * (branchLength * (Math.random() * branchLengthVariation + 1));
                 const thicknessDice1 = thickness * (Math.random() * (1 - branchThicknessVariation) + branchThicknessVariation);
                 const thicknessDice2 = thickness * (Math.random() * (1 - branchThicknessVariation) + branchThicknessVariation);
                 const thickness1 = thicknessDice1 < branchThickness ? thicknessDice1 : branchThickness;
                 const thickness2 = thicknessDice2 < branchThickness ? thicknessDice2 : branchThickness;
-                drawTree(endX, endY, angle + branchAngleVariation, depth + 1, thickness1);
-                drawTree(endX, endY, angle - branchAngleVariation, depth + 1, thickness2);
+                drawTree(endX, endY, angle + branchAngleVariation, depth + 1, thickness1, dx1, dy1);
+                drawTree(endX, endY, angle - branchAngleVariation, depth + 1, thickness2, dx2, dy2);
 
             } else {
                 // Dessiner une feuille à l'extrémité de la branche
@@ -81,8 +81,6 @@
 
         // Dessiner l'arbre à partir du milieu du canvas
         drawTree(canvas.width / 2, canvas.height, -Math.PI / 2, 0, branchThickness);
-
-
     </script>
 </body>
 
