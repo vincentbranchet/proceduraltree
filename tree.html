@@ -128,9 +128,8 @@
                 const thicknessDice2 = thickness * (Math.random() * (1 - branchThicknessVariation) + branchThicknessVariation);
                 const thickness1 = thicknessDice1 < branchThickness ? thicknessDice1 : branchThickness;
                 const thickness2 = thicknessDice2 < branchThickness ? thicknessDice2 : branchThickness;
-                drawTree(endX, endY, angle + branchAngleVariation, depth + 1, thickness1, dx1, dy1);
-                drawTree(endX, endY, angle - branchAngleVariation, depth + 1, thickness2, dx2, dy2);
-                //angle + ANGLE + (Math.random() * WIND_ANGLE - WIND_ANGLE / 2),
+                drawTree(endX, endY, angle + branchAngleVariation + (Math.random() * WIND_ANGLE - WIND_ANGLE / 2), depth + 1, thickness1, dx1, dy1);
+                drawTree(endX, endY, angle - branchAngleVariation + (Math.random() * WIND_ANGLE - WIND_ANGLE / 2), depth + 1, thickness2, dx2, dy2);
             }
         }
 
@@ -148,7 +147,7 @@
             // Planifier la prochaine animation
             setTimeout(() => {
                 requestAnimationFrame(animateTree);
-            }, 1000 / 8)
+            }, 1000 / 1)
         }
 
         animateTree();
