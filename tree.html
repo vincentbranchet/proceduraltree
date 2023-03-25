@@ -17,9 +17,9 @@
         const branchThickness = 20; // Épaisseur de la branche principale
         const branchColor = "#663300"; // Couleur de la branche principale
         const branchColorVariation = 20; // Variation de la couleur de la branche
-        const branchLengthVariation = 0.8; // Variation de la longueur des branches
-        const branchAngleVariation = Math.PI / 16; // Variation de l'angle de séparation des branches
-        const branchThicknessVariation = 0.7; // Variation de l'épaisseur des branches
+        const branchLengthVariation = 0.9; // Variation de la longueur des branches
+        const branchAngleVariation = Math.PI / 12; // Variation de l'angle de séparation des branches
+        const branchThicknessVariation = 0.5; // Variation de l'épaisseur des branches (entre 0.5 et 1)
         const leafProbability = 0.9; // Probabilité de dessiner une feuille à l'extrémité d'une branche
         const leafSize = 20; // Taille des feuilles
         const leafColor = "#007700"; // Couleur des feuilles
@@ -64,10 +64,12 @@
                 const dy1 = Math.sin(angle + branchAngle * (Math.random() * branchAngleVariation * 2 - branchAngleVariation)) * (branchLength * (Math.random() * branchLengthVariation + 1));
                 const dx2 = Math.cos(angle - branchAngle * (Math.random() * branchAngleVariation * 2 - branchAngleVariation)) * (branchLength * (Math.random() * branchLengthVariation + 1));
                 const dy2 = Math.sin(angle - branchAngle * (Math.random() * branchAngleVariation * 2 - branchAngleVariation)) * (branchLength * (Math.random() * branchLengthVariation + 1));
-                const thickness1 = (thickness * (Math.random() * branchThicknessVariation + 1)) < branchThickness ? thickness * (Math.random() * branchThicknessVariation + 1) : branchThickness;
-                const thickness2 = (thickness * (Math.random() * branchThicknessVariation + 1)) < branchThickness ? thickness * (Math.random() * branchThicknessVariation + 1) : branchThickness;
-                drawTree(endX, endY, angle + Math.PI / 8, depth + 1, thickness1);
-                drawTree(endX, endY, angle - Math.PI / 8, depth + 1, thickness2);
+                const thicknessDice1 = thickness * (Math.random() * (1 - branchThicknessVariation) + branchThicknessVariation);
+                const thicknessDice2 = thickness * (Math.random() * (1 - branchThicknessVariation) + branchThicknessVariation);
+                const thickness1 = thicknessDice1 < branchThickness ? thicknessDice1 : branchThickness;
+                const thickness2 = thicknessDice2 < branchThickness ? thicknessDice2 : branchThickness;
+                drawTree(endX, endY, angle + branchAngleVariation, depth + 1, thickness1);
+                drawTree(endX, endY, angle - branchAngleVariation, depth + 1, thickness2);
 
             } else {
                 // Dessiner une feuille à l'extrémité de la branche
