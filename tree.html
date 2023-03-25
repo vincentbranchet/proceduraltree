@@ -20,8 +20,8 @@
         const branchLengthVariation = 0.9; // Variation de la longueur des branches
         const branchAngleVariation = Math.PI / 12; // Variation de l'angle de séparation des branches
         const branchThicknessVariation = 0.6; // Variation de l'épaisseur des branches (0.5 = très varié, 1 = aucune variation)
-        const leafProbability = 0.7; // Probabilité de dessiner une feuille à l'extrémité d'une branche
-        const leafSize = 20; // Taille des feuilles
+        const leafProbability = 0.9; // Probabilité de dessiner une feuille à l'extrémité d'une branche
+        const leafSize = 10; // Taille des feuilles
         const leafColor = "#007700"; // Couleur des feuilles
 
         // Création du canvas
@@ -39,8 +39,8 @@
             context.ellipse(
                 x,
                 y,
-                5,
-                10,
+                leafSize,
+                leafSize * 2,
                 Math.random() * 360,
                 0,
                 2 * Math.PI
@@ -67,8 +67,9 @@
             
             // Dessiner une feuille
             const leafDice = Math.random() - (depth - maxDepth) / 10;
+
             if (leafDice < leafProbability) {
-                drawLeaf(endX, endY);
+                    drawLeaf(endX, endY);
             }
 
             if (depth < maxDepth) {
