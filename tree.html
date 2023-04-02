@@ -59,13 +59,14 @@
         const branchColorindex = Math.round(seedRandom('branches') * (AVAILABLE_BRANCH_COLORS.length - 1))
         const leafColorindex = Math.round(seedRandom('leaves') * (AVAILABLE_LEAF_COLORS.length - 1))
         const maxDepth = 12; // Profondeur maximale de l'arbre
-        const branchLength = 40; // Longueur maximale des branches
+        const branchMaxLength = 100; // Longueur maximale des branches
+        const branchMinLength = 10;
         const branchAngle = Math.PI / 2; // Angle de séparation des branches
-        const branchThickness = 20; // Épaisseur de la branche principale
+        const branchThickness = 30; // Épaisseur de la branche principale
         const branchColor = AVAILABLE_BRANCH_COLORS[branchColorindex]; // Couleur de la branche principale
-        const branchColorVariation = 20; // Variation de la couleur de la branche
-        const branchLengthVariation = 0.9; // Variation de la longueur des branches
-        const branchAngleVariation = Math.PI / 14; // Variation de l'angle de séparation des branches
+        const branchColorVariation = 30; // Variation de la couleur de la branche
+        const branchLengthVariation = 1; // Variation de la longueur des branches
+        const branchAngleVariation = Math.PI / 22; // Variation de l'angle de séparation des branches
         const branchThicknessVariation = 0.6; // Variation de l'épaisseur des branches (0.5 = très varié, 1 = aucune variation)
         const leafProbability = 0.9; // Probabilité de dessiner une feuille à l'extrémité d'une branche
         const leafSize = 5; // Taille des feuilles
@@ -121,8 +122,8 @@
             // Dessiner la branche principale
             context.beginPath();
             context.moveTo(x, y);
-            const endX = x + Math.cos(angle) * (branchLength * (seedRandom(x) * branchLengthVariation + 1));
-            const endY = y + Math.sin(angle) * (branchLength * (seedRandom(y) * branchLengthVariation + 1));
+            const endX = x + Math.cos(angle) * ((seedRandom(x) *  (branchMaxLength - branchMinLength) + branchMinLength));
+            const endY = y + Math.sin(angle) * ((seedRandom(y) *  (branchMaxLength - branchMinLength) + branchMinLength));
             const branchColorHue = parseInt(branchColor.substring(1), 16);
             const branchColorVariationHue = Math.floor(seedRandom(x) * branchColorVariation * 2) - branchColorVariation;
             const branchColorHueWithVariation = (branchColorHue + branchColorVariationHue) % 360;
@@ -141,12 +142,12 @@
 
             if (depth < maxDepth) {
                 // Dessiner les branches suivantes
-                const dx1 = endX + Math.cos(angle + branchAngle * (seedRandom(endX) * branchAngleVariation)) * (branchLength * (seedRandom(endX) * branchLengthVariation + 1));
-                const dy1 = endY + Math.sin(angle + branchAngle * (seedRandom(endY) * branchAngleVariation)) * (branchLength * (seedRandom(endY) * branchLengthVariation + 1));
-                const dx2 = endX + Math.cos(angle - branchAngle * (seedRandom(endX + 1) * branchAngleVariation)) * (branchLength * (seedRandom(endX + 1) * branchLengthVariation + 1));
-                const dy2 = endY + Math.sin(angle - branchAngle * (seedRandom(endY + 1) * branchAngleVariation)) * (branchLength * (seedRandom(endY + 1) * branchLengthVariation + 1));
+                const dx1 = endX + Math.cos(angle + branchAngle * (seedRandom(endX) * branchAngleVariation)) * ((seedRandom(endX) *  (branchMaxLength - branchMinLength) + branchMinLength));
+                const dy1 = endY + Math.sin(angle + branchAngle * (seedRandom(endY) * branchAngleVariation)) * ((seedRandom(endY) *  (branchMaxLength - branchMinLength) + branchMinLength));
+                const dx2 = endX + Math.cos(angle - branchAngle * (seedRandom(endX + 1) * branchAngleVariation)) * ((seedRandom(endX + 1) *  (branchMaxLength - branchMinLength) + branchMinLength));
+                const dy2 = endY + Math.sin(angle - branchAngle * (seedRandom(endY + 1) * branchAngleVariation)) * ((seedRandom(endY + 1) *  (branchMaxLength - branchMinLength) + branchMinLength));
                 const thicknessDice1 = thickness * (seedRandom(endX) * (1 - branchThicknessVariation) + branchThicknessVariation);
-                const thicknessDice2 = thickness * (seedRandom(endX + 1) * (1 - branchThicknessVariation) + branchThicknessVariation);
+                const thicknessDice2 = thickness * (seedRandom(endX) * (1 - branchThicknessVariation) + branchThicknessVariation);
                 const thickness1 = thicknessDice1 < branchThickness ? thicknessDice1 : branchThickness;
                 const thickness2 = thicknessDice2 < branchThickness ? thicknessDice2 : branchThickness;
                 drawTree(endX, endY, angle + branchAngleVariation, depth + 1, thickness1, dx1, dy1);
