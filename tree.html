@@ -6,6 +6,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Arbre procédural</title>
+    <style>
+        body {
+            margin: 0;
+        }
+    </style>
 </head>
 
 <body>
@@ -34,26 +39,48 @@
             }
             return Math.abs(hash);
         }
+        
 
+        // Définition de la graine
+        const seed = 'fpfuyb';
+
+        // Création de la fonction de pseudogénération
+        const seedRandom = createRandomGenerator(seed);
+        // seedRandom('init')
+
+        // Définition des constantes
+        const AVAILABLE_SKY_COLORS = ['#82AAE3', '#91D8E4', '#BFEAF5', '#EAFDFC', '#B9F3FC', '#AEE2FF', '#93C6E7', '#93C6E7', '#FEDEFF', '#6E85B7', '#B2C8DF', '#C4D7E0', '#FFC18E', '#CA4E79', '#7A4069', '#513252'];
+        const AVAILABLE_BRANCH_COLORS = ['#A9907E', '#F3DEBA', '#675D50', '#A75D5D', '#473C33', '#4C4B16', '#AA8B56', '#665A48', '#61481C', '#A97155', '#663300'];
+        const AVAILABLE_LEAF_COLORS = ['#ABC4AA', '#F7DB6A', '#EBB02D', '#AEC2B6', '#FC7300', '#D3756B', '#BFDB38', '#609966', '#82CD47', '#379237', '#F8C4B4', '#FFAE6D', '#007700'];
 
         // Définition des paramètres de l'arbre
         const maxDepth = 12; // Profondeur maximale de l'arbre
         const branchLength = 40; // Longueur maximale des branches
         const branchAngle = Math.PI / 2; // Angle de séparation des branches
         const branchThickness = 20; // Épaisseur de la branche principale
-        const branchColor = "#663300"; // Couleur de la branche principale
+        const branchColor = AVAILABLE_BRANCH_COLORS[Math.round(seedRandom('branches') * AVAILABLE_BRANCH_COLORS.length)]; // Couleur de la branche principale
         const branchColorVariation = 20; // Variation de la couleur de la branche
         const branchLengthVariation = 0.9; // Variation de la longueur des branches
         const branchAngleVariation = Math.PI / 14; // Variation de l'angle de séparation des branches
         const branchThicknessVariation = 0.6; // Variation de l'épaisseur des branches (0.5 = très varié, 1 = aucune variation)
         const leafProbability = 0.9; // Probabilité de dessiner une feuille à l'extrémité d'une branche
         const leafSize = 5; // Taille des feuilles
-        const leafColor = "#007700"; // Couleur des feuilles
+        const leafColor = AVAILABLE_LEAF_COLORS[Math.round(seedRandom('leaves') * AVAILABLE_LEAF_COLORS.length)]; // Couleur des feuilles
 
         // Définition des paramètres extérieurs
+        // On veut une valeur de probabilité différente chaque jour, or seedRandom() donne la même valeur peu importe ce qu'on lui passe
+        // Ceci est du au fait l'algorithme (bancal) donne des valeurs qui dépendent du nombre de fois où la fonction a été appelée
+        // Solution de contournement : on appelle seedRandom() une fois de plus qu'hier pour obtenir un chiffre différent
+        const EVE = new Date(0);
+        let TODAY = new Date();
+        TODAY = new Date(TODAY.setDate(TODAY.getDate() + 0))
+        const diffInDays = Math.round(Math.abs(TODAY - EVE) / 1000 / 60 / 60 / 24)
+        for(let day = 0; day < diffInDays; day++) {
+            seedRandom(TODAY.getTime())
+        }
         const WIND_ANGLE = Math.PI / 64;
         const WIND_SPEED = 0.05;
-        const seed = 'rgergre';
+        const SKY_COLOR = AVAILABLE_SKY_COLORS[Math.round(seedRandom(TODAY.getTime()) * AVAILABLE_SKY_COLORS.length)];
 
         // Création du canvas
         const canvas = document.createElement("canvas");
@@ -64,8 +91,9 @@
         // Récupération du contexte de rendu
         const context = canvas.getContext("2d");
 
-        // Création de la fonction de pseudogénération
-        const seedRandom = createRandomGenerator(seed);
+        // Dessin du décor
+        context.fillStyle = SKY_COLOR;
+        context.fillRect(0, 0, canvas.width, canvas.height);
 
         // Fonction pour dessiner une feuille à une position donnée
         function drawLeaf(x, y) {
