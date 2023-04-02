@@ -9,6 +9,8 @@
     <style>
         body {
             margin: 0;
+            width: 100%;
+            overflow: hidden;
         }
     </style>
 </head>
@@ -84,7 +86,7 @@
 
         // Création du canvas
         const canvas = document.createElement("canvas");
-        canvas.width = window.innerWidth;
+        canvas.width = document.body.clientWidth;
         canvas.height = window.innerHeight;
         document.body.appendChild(canvas);
 
