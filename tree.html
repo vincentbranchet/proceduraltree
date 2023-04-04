@@ -41,7 +41,7 @@
             }
             return Math.abs(hash);
         }
-        
+
 
         // Définition de la graine
         const seed = 'fpfuyb';
@@ -64,14 +64,14 @@
         const branchAngle = Math.PI / 2; // Angle de séparation des branches
         const branchThickness = 30; // Épaisseur de la branche principale
         const branchColor = AVAILABLE_BRANCH_COLORS[branchColorindex]; // Couleur de la branche principale
-        const branchColorVariation = 30; // Variation de la couleur de la branche
+        const branchColorVariation = 0.8; // Amplitude de variation de couleur des branches (autour de 1)
         const branchLengthVariation = 1; // Variation de la longueur des branches
         const branchAngleVariation = Math.PI / 22; // Variation de l'angle de séparation des branches
         const branchThicknessVariation = 0.6; // Variation de l'épaisseur des branches (0.5 = très varié, 1 = aucune variation)
         const leafProbability = 0.9; // Probabilité de dessiner une feuille à l'extrémité d'une branche
         const leafSize = 5; // Taille des feuilles
         const leafColor = AVAILABLE_LEAF_COLORS[leafColorindex]; // Couleur des feuilles
-        
+
         // Définition des paramètres extérieurs
         // On veut une valeur de probabilité différente chaque jour, or seedRandom() donne la même valeur peu importe ce qu'on lui passe
         // Ceci est du au fait l'algorithme (bancal) donne des valeurs qui dépendent du nombre de fois où la fonction a été appelée
@@ -80,7 +80,7 @@
         let TODAY = new Date();
         TODAY = new Date(TODAY.setDate(TODAY.getDate() + 0))
         const diffInDays = Math.round(Math.abs(TODAY - EVE) / 1000 / 60 / 60 / 24)
-        for(let day = 0; day < diffInDays; day++) {
+        for (let day = 0; day < diffInDays; day++) {
             seedRandom(TODAY.getTime())
         }
         const WIND_ANGLE = Math.PI / 64;
@@ -117,19 +117,35 @@
             context.fill();
         }
 
+        function colorWithVariation(hexColor) {
+            // Convertir le code couleur hexadécimal en valeurs RGB
+            let r = parseInt(hexColor.substr(1, 2), 16);
+            let g = parseInt(hexColor.substr(3, 2), 16);
+            let b = parseInt(hexColor.substr(5, 2), 16);
+
+            // Calculer une valeur de sombritude aléatoire entre 0 et 1
+            let variation = seedRandom() * ((1 + branchColorVariation) - (1 - branchColorVariation)) + (1 - branchColorVariation);
+
+            // Appliquer la valeur de sombritude pour rendre la couleur plus sombre
+            r = Math.min(Math.floor(r * variation), 255);
+            g = Math.min(Math.floor(g * variation), 255);
+            b = Math.min(Math.floor(b * variation), 255);
+
+            // Convertir les valeurs RGB en un code couleur hexadécimal
+            let hexColorWithVariation = '#' + r.toString(16).padStart(2, '0') + g.toString(16).padStart(2, '0') + b.toString(16).padStart(2, '0');
+
+            return hexColorWithVariation;
+        }
+
         // Fonction récursive pour dessiner l'arbre
         function drawTree(x, y, angle, depth, thickness, curveControlPointX = x, curveControlPointY = y) {
             // Dessiner la branche principale
             context.beginPath();
             context.moveTo(x, y);
-            const endX = x + Math.cos(angle) * ((seedRandom(x) *  (branchMaxLength - branchMinLength) + branchMinLength));
-            const endY = y + Math.sin(angle) * ((seedRandom(y) *  (branchMaxLength - branchMinLength) + branchMinLength));
-            const branchColorHue = parseInt(branchColor.substring(1), 16);
-            const branchColorVariationHue = Math.floor(seedRandom(x) * branchColorVariation * 2) - branchColorVariation;
-            const branchColorHueWithVariation = (branchColorHue + branchColorVariationHue) % 360;
-            const branchColorWithVariation = `hsl(${branchColorHueWithVariation}, 50%, 30%)`;
+            const endX = x + Math.cos(angle) * ((seedRandom(x) * (branchMaxLength - branchMinLength) + branchMinLength));
+            const endY = y + Math.sin(angle) * ((seedRandom(y) * (branchMaxLength - branchMinLength) + branchMinLength));
             context.quadraticCurveTo(curveControlPointX, curveControlPointY, endX, endY);
-            context.strokeStyle = branchColorWithVariation;
+            context.strokeStyle = colorWithVariation(branchColor);
             context.lineWidth = thickness;
             context.stroke();
 
@@ -142,10 +158,10 @@
 
             if (depth < maxDepth) {
                 // Dessiner les branches suivantes
-                const dx1 = endX + Math.cos(angle + branchAngle * (seedRandom(endX) * branchAngleVariation)) * ((seedRandom(endX) *  (branchMaxLength - branchMinLength) + branchMinLength));
-                const dy1 = endY + Math.sin(angle + branchAngle * (seedRandom(endY) * branchAngleVariation)) * ((seedRandom(endY) *  (branchMaxLength - branchMinLength) + branchMinLength));
-                const dx2 = endX + Math.cos(angle - branchAngle * (seedRandom(endX + 1) * branchAngleVariation)) * ((seedRandom(endX + 1) *  (branchMaxLength - branchMinLength) + branchMinLength));
-                const dy2 = endY + Math.sin(angle - branchAngle * (seedRandom(endY + 1) * branchAngleVariation)) * ((seedRandom(endY + 1) *  (branchMaxLength - branchMinLength) + branchMinLength));
+                const dx1 = endX + Math.cos(angle + branchAngle * (seedRandom(endX) * branchAngleVariation)) * ((seedRandom(endX) * (branchMaxLength - branchMinLength) + branchMinLength));
+                const dy1 = endY + Math.sin(angle + branchAngle * (seedRandom(endY) * branchAngleVariation)) * ((seedRandom(endY) * (branchMaxLength - branchMinLength) + branchMinLength));
+                const dx2 = endX + Math.cos(angle - branchAngle * (seedRandom(endX + 1) * branchAngleVariation)) * ((seedRandom(endX + 1) * (branchMaxLength - branchMinLength) + branchMinLength));
+                const dy2 = endY + Math.sin(angle - branchAngle * (seedRandom(endY + 1) * branchAngleVariation)) * ((seedRandom(endY + 1) * (branchMaxLength - branchMinLength) + branchMinLength));
                 const thicknessDice1 = thickness * (seedRandom(endX) * (1 - branchThicknessVariation) + branchThicknessVariation);
                 const thicknessDice2 = thickness * (seedRandom(endX) * (1 - branchThicknessVariation) + branchThicknessVariation);
                 const thickness1 = thicknessDice1 < branchThickness ? thicknessDice1 : branchThickness;
