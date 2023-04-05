@@ -47,13 +47,13 @@
         const seed = 'fpfuyb';
 
         // Création de la fonction de pseudogénération
-        const seedRandom = createRandomGenerator(seed);
-        // const seedRandom = Math.random
+        // const seedRandom = createRandomGenerator(seed);
+        const seedRandom = Math.random
 
         // Définition des constantes
-        const AVAILABLE_SKY_COLORS = ['#82AAE3', '#91D8E4', '#BFEAF5', '#EAFDFC', '#B9F3FC', '#AEE2FF', '#93C6E7', '#93C6E7', '#FEDEFF', '#6E85B7', '#B2C8DF', '#C4D7E0', '#FFC18E', '#CA4E79', '#7A4069', '#513252'];
-        const AVAILABLE_BRANCH_COLORS = ['#A9907E', '#F3DEBA', '#675D50', '#A75D5D', '#473C33', '#4C4B16', '#AA8B56', '#665A48', '#61481C', '#A97155', '#663300'];
-        const AVAILABLE_LEAF_COLORS = ['#ABC4AA', '#F7DB6A', '#EBB02D', '#AEC2B6', '#FC7300', '#D3756B', '#BFDB38', '#609966', '#82CD47', '#379237', '#F8C4B4', '#FFAE6D', '#007700'];
+        const AVAILABLE_SKY_COLORS = ['#82AAE3', '#91D8E4', '#BFEAF5', '#B9F3FC', '#AEE2FF', '#93C6E7', '#93C6E7', '#FEDEFF', '#6E85B7', '#FFC18E', '#CA4E79', '#7A4069'];
+        const AVAILABLE_BRANCH_COLORS = ['#A9907E', '#F3DEBA', '#675D50', '#473C33', '#4C4B16', '#AA8B56', '#665A48', '#61481C', '#A97155', '#663300'];
+        const AVAILABLE_LEAF_COLORS = ['#ABC4AA', '#F7DB6A', '#EBB02D', '#AEC2B6', '#FC7300', '#D3756B', '#609966', '#82CD47', '#379237', '#F8C4B4', '#FFAE6D', '#007700'];
 
         // Définition des paramètres de l'arbre
         const branchColorindex = Math.round(seedRandom('branches') * (AVAILABLE_BRANCH_COLORS.length - 1))
@@ -64,13 +64,14 @@
         const branchAngle = Math.PI / 2; // Angle de séparation des branches
         const branchThickness = 30; // Épaisseur de la branche principale
         const branchColor = AVAILABLE_BRANCH_COLORS[branchColorindex]; // Couleur de la branche principale
-        const branchColorVariation = 0.8; // Amplitude de variation de couleur des branches (autour de 1)
+        const branchColorVariation = 0.2; // Amplitude de variation de couleur des branches (autour de 1)
         const branchLengthVariation = 1; // Variation de la longueur des branches
         const branchAngleVariation = Math.PI / 22; // Variation de l'angle de séparation des branches
         const branchThicknessVariation = 0.6; // Variation de l'épaisseur des branches (0.5 = très varié, 1 = aucune variation)
         const leafProbability = 0.9; // Probabilité de dessiner une feuille à l'extrémité d'une branche
         const leafSize = 5; // Taille des feuilles
         const leafColor = AVAILABLE_LEAF_COLORS[leafColorindex]; // Couleur des feuilles
+        const leafColorVariation = 0.5;
 
         // Définition des paramètres extérieurs
         // On veut une valeur de probabilité différente chaque jour, or seedRandom() donne la même valeur peu importe ce qu'on lui passe
@@ -87,6 +88,8 @@
         const WIND_SPEED = 0.05;
         const SKY_COLOR_INDEX = Math.round(seedRandom(TODAY.getTime()) * (AVAILABLE_SKY_COLORS.length - 1))
         const SKY_COLOR = AVAILABLE_SKY_COLORS[SKY_COLOR_INDEX];
+
+        console.log({branch: branchColor, leaf: leafColor, sky: SKY_COLOR})
 
         // Création du canvas
         const canvas = document.createElement("canvas");
@@ -113,23 +116,23 @@
                 0,
                 2 * Math.PI
             );
-            context.fillStyle = leafColor;
+            context.fillStyle = colorWithVariation(leafColor, leafColorVariation);
             context.fill();
         }
 
-        function colorWithVariation(hexColor) {
+        function colorWithVariation(hexColor, variation) {
             // Convertir le code couleur hexadécimal en valeurs RGB
             let r = parseInt(hexColor.substr(1, 2), 16);
             let g = parseInt(hexColor.substr(3, 2), 16);
             let b = parseInt(hexColor.substr(5, 2), 16);
 
             // Calculer une valeur de sombritude aléatoire entre 0 et 1
-            let variation = seedRandom() * ((1 + branchColorVariation) - (1 - branchColorVariation)) + (1 - branchColorVariation);
+            let randomVariation = seedRandom() * ((1 + variation) - (1 - variation)) + (1 - variation);
 
             // Appliquer la valeur de sombritude pour rendre la couleur plus sombre
-            r = Math.min(Math.floor(r * variation), 255);
-            g = Math.min(Math.floor(g * variation), 255);
-            b = Math.min(Math.floor(b * variation), 255);
+            r = Math.min(Math.floor(r * randomVariation), 255);
+            g = Math.min(Math.floor(g * randomVariation), 255);
+            b = Math.min(Math.floor(b * randomVariation), 255);
 
             // Convertir les valeurs RGB en un code couleur hexadécimal
             let hexColorWithVariation = '#' + r.toString(16).padStart(2, '0') + g.toString(16).padStart(2, '0') + b.toString(16).padStart(2, '0');
@@ -145,7 +148,7 @@
             const endX = x + Math.cos(angle) * ((seedRandom(x) * (branchMaxLength - branchMinLength) + branchMinLength));
             const endY = y + Math.sin(angle) * ((seedRandom(y) * (branchMaxLength - branchMinLength) + branchMinLength));
             context.quadraticCurveTo(curveControlPointX, curveControlPointY, endX, endY);
-            context.strokeStyle = colorWithVariation(branchColor);
+            context.strokeStyle = colorWithVariation(branchColor, branchColorVariation);
             context.lineWidth = thickness;
             context.stroke();
 
