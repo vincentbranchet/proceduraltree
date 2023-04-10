@@ -55,15 +55,26 @@ function drawTree(x, y, angle, depth, thickness, curveControlPointX = x, curveCo
 
     if (depth < maxDepth) {
         // Dessiner les branches suivantes
-        const dx1 = endX + Math.cos(angle + branchAngle * (seedRandom(endX) * branchAngleVariation)) * ((seedRandom(endX) * (branchMaxLength - branchMinLength) + branchMinLength));
-        const dy1 = endY + Math.sin(angle + branchAngle * (seedRandom(endY) * branchAngleVariation)) * ((seedRandom(endY) * (branchMaxLength - branchMinLength) + branchMinLength));
-        const dx2 = endX + Math.cos(angle - branchAngle * (seedRandom(endX + 1) * branchAngleVariation)) * ((seedRandom(endX + 1) * (branchMaxLength - branchMinLength) + branchMinLength));
-        const dy2 = endY + Math.sin(angle - branchAngle * (seedRandom(endY + 1) * branchAngleVariation)) * ((seedRandom(endY + 1) * (branchMaxLength - branchMinLength) + branchMinLength));
-        const thicknessDice1 = thickness * (seedRandom(endX) * (1 - branchThicknessVariation) + branchThicknessVariation);
-        const thicknessDice2 = thickness * (seedRandom(endX) * (1 - branchThicknessVariation) + branchThicknessVariation);
-        const thickness1 = thicknessDice1 < branchThickness ? thicknessDice1 : branchThickness;
-        const thickness2 = thicknessDice2 < branchThickness ? thicknessDice2 : branchThickness;
-        drawTree(endX, endY, angle + branchAngleVariation, depth + 1, thickness1, dx1, dy1);
-        drawTree(endX, endY, angle - branchAngleVariation, depth + 1, thickness2, dx2, dy2);
+        const d1 = getCurve(endX, endY, angle);
+        const d2 = getCurve(endX + 1, endY + 1, angle);
+
+        const thickness1 = getThickness(endY, thickness);
+        const thickness2 = getThickness(endY, thickness);
+        
+        drawTree(endX, endY, angle + branchAngleVariation, depth + 1, thickness1, d1.x, d1.y);
+        drawTree(endX, endY, angle - branchAngleVariation, depth + 1, thickness2, d2.x, d2.y);
     }
+}
+
+function getCurve(x, y, angle) {
+    const curveX = x + Math.cos(angle + branchAngle * (seedRandom(x) * branchAngleVariation)) * ((seedRandom(x) * (branchMaxLength - branchMinLength) + branchMinLength));
+    const curveY = y + Math.sin(angle + branchAngle * (seedRandom(y) * branchAngleVariation)) * ((seedRandom(y) * (branchMaxLength - branchMinLength) + branchMinLength));
+    return {curveX, curveY}
+}
+
+function getThickness(x, thickness) {
+    const dice = thickness * (seedRandom(x) * (1 - branchThicknessVariation) + branchThicknessVariation)
+    if(dice < branchThickness) {
+        return dice
+    } else return branchThickness
 }
