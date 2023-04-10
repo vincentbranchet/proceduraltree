@@ -36,33 +36,37 @@ function colorWithVariation(hexColor, variation, position) {
 
 // Fonction récursive pour dessiner l'arbre
 function drawTree(x, y, angle, depth, thickness, curveControlPointX = x, curveControlPointY = y) {
-    // Dessiner la branche principale
-    context.beginPath();
-    context.moveTo(x, y);
-    const endX = x + Math.cos(angle) * ((seedRandom(x, y) * (branchMaxLength - branchMinLength) + branchMinLength));
-    const endY = y + Math.sin(angle) * ((seedRandom(x, y) * (branchMaxLength - branchMinLength) + branchMinLength));
-    context.quadraticCurveTo(curveControlPointX, curveControlPointY, endX, endY);
-    context.strokeStyle = colorWithVariation(branchColor, branchColorVariation, endX);
-    context.lineWidth = thickness;
-    context.stroke();
-
-    // Dessiner une feuille
-    const leafDice = seedRandom(x) - (depth - maxDepth) / 10;
-
-    if (leafDice < leafProbability) {
-        drawLeaf(endX, endY);
-    }
-
-    if (depth < maxDepth) {
-        // Dessiner les branches suivantes
-        const d1 = getCurve(endX, endY, angle);
-        const d2 = getCurve(endX + 1, endY + 1, angle);
-
-        const thickness1 = getThickness(endY, thickness);
-        const thickness2 = getThickness(endY, thickness);
-        
-        drawTree(endX, endY, angle + branchAngleVariation, depth + 1, thickness1, d1.x, d1.y);
-        drawTree(endX, endY, angle - branchAngleVariation, depth + 1, thickness2, d2.x, d2.y);
+    if(drawn <= AGE) {
+        // Dessiner la branche principale
+        context.beginPath();
+        context.moveTo(x, y);
+        const endX = x + Math.cos(angle) * ((seedRandom(x, y) * (branchMaxLength - branchMinLength) + branchMinLength));
+        const endY = y + Math.sin(angle) * ((seedRandom(x, y) * (branchMaxLength - branchMinLength) + branchMinLength));
+        context.quadraticCurveTo(curveControlPointX, curveControlPointY, endX, endY);
+        context.strokeStyle = colorWithVariation(branchColor, branchColorVariation, endX);
+        context.lineWidth = thickness;
+        context.stroke();
+    
+        // Dessiner une feuille
+        const leafDice = seedRandom(x) - (depth - maxDepth) / 10;
+    
+        if (leafDice < leafProbability) {
+            drawLeaf(endX, endY);
+        }
+    
+        if (depth < maxDepth) {
+            // Dessiner les branches suivantes
+            const d1 = getCurve(endX, endY, angle);
+            const d2 = getCurve(endX + 1, endY + 1, angle);
+    
+            const thickness1 = getThickness(endY, thickness);
+            const thickness2 = getThickness(endY, thickness);
+            
+            drawTree(endX, endY, angle + branchAngleVariation, depth + 1, thickness1, d1.x, d1.y);
+            drawTree(endX, endY, angle - branchAngleVariation, depth + 1, thickness2, d2.x, d2.y);
+        }
+    
+        drawn++
     }
 }
 
