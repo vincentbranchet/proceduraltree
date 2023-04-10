@@ -16,15 +16,9 @@
 </head>
 
 <body>
-    <script type="text/javascript" src="./seeding.js"></script>
     <script type="text/javascript" src="./drawing.js"></script>
     <script>
-        // Définition de la graine
-        let seed = 'seed';
-
-        // Création de la fonction de pseudogénération
-        const seedRandom = createRandomGenerator(seed);
-        // const seedRandom = Math.random
+        const random = Math.random
 
         // Définition des constantes
         const AVAILABLE_SKY_COLORS = ['#82AAE3', '#91D8E4', '#BFEAF5', '#B9F3FC', '#AEE2FF', '#93C6E7', '#93C6E7', '#FEDEFF', '#6E85B7', '#FFC18E', '#CA4E79', '#7A4069'];
@@ -32,8 +26,8 @@
         const AVAILABLE_LEAF_COLORS = ['#ABC4AA', '#F7DB6A', '#EBB02D', '#AEC2B6', '#FC7300', '#D3756B', '#609966', '#82CD47', '#379237', '#F8C4B4', '#FFAE6D', '#007700'];
 
         // Définition des paramètres de l'arbre
-        const branchColorindex = Math.round(seedRandom('branches') * (AVAILABLE_BRANCH_COLORS.length - 1))
-        const leafColorindex = Math.round(seedRandom('leaves') * (AVAILABLE_LEAF_COLORS.length - 1))
+        const branchColorindex = Math.round(random('branches') * (AVAILABLE_BRANCH_COLORS.length - 1))
+        const leafColorindex = Math.round(random('leaves') * (AVAILABLE_LEAF_COLORS.length - 1))
         const maxDepth = 12; // Profondeur maximale de l'arbre
         const branchMaxLength = 100; // Longueur maximale des branches
         const branchMinLength = 10;
@@ -53,7 +47,7 @@
         const TODAY = new Date()
         const WIND_ANGLE = Math.PI / 64;
         const WIND_SPEED = 0.05;
-        const SKY_COLOR_INDEX = Math.round(seedRandom(TODAY.toDateString()) * (AVAILABLE_SKY_COLORS.length - 1))
+        const SKY_COLOR_INDEX = Math.round(random(TODAY.toDateString()) * (AVAILABLE_SKY_COLORS.length - 1))
         const SKY_COLOR = AVAILABLE_SKY_COLORS[SKY_COLOR_INDEX];
 
         // Création du canvas
