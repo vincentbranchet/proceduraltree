@@ -16,35 +16,10 @@
 </head>
 
 <body>
+    <script type="text/javascript" src="./seeding.js"></script>
     <script>
-        function createRandomGenerator(seed) {
-            const constant = Math.pow(2, 13) + 1;
-            const prime = 1987;
-            const range = Math.pow(2, 50);
-            let x = stringToNumberHash(seed) % range;
-
-            return function () {
-                x = (constant * x + prime) % range;
-                return x / range;
-            }
-        }
-
-        function stringToNumberHash(str) {
-            let hash = 0;
-            if (str.length === 0) {
-                return hash;
-            }
-            for (let i = 0; i < str.length; i++) {
-                const char = str.charCodeAt(i);
-                hash = ((hash << 5) - hash) + char;
-                hash |= 0; // Convertit en entier 32 bits
-            }
-            return Math.abs(hash);
-        }
-
-
         // Définition de la graine
-        let seed = 'fpfuyb';
+        let seed = '865489';
 
         // Création de la fonction de pseudogénération
         const seedRandom = createRandomGenerator(seed);
@@ -114,18 +89,18 @@
                 0,
                 2 * Math.PI
             );
-            context.fillStyle = colorWithVariation(leafColor, leafColorVariation);
+            context.fillStyle = colorWithVariation(leafColor, leafColorVariation, x);
             context.fill();
         }
 
-        function colorWithVariation(hexColor, variation) {
+        function colorWithVariation(hexColor, variation, position) {
             // Convertir le code couleur hexadécimal en valeurs RGB
             let r = parseInt(hexColor.substr(1, 2), 16);
             let g = parseInt(hexColor.substr(3, 2), 16);
             let b = parseInt(hexColor.substr(5, 2), 16);
 
             // Calculer une valeur de sombritude aléatoire entre 0 et 1
-            let randomVariation = seedRandom() * ((1 + variation) - (1 - variation)) + (1 - variation);
+            let randomVariation = seedRandom(position) * ((1 + variation) - (1 - variation)) + (1 - variation);
 
             // Appliquer la valeur de sombritude pour rendre la couleur plus sombre
             r = Math.min(Math.floor(r * randomVariation), 255);
@@ -146,7 +121,7 @@
             const endX = x + Math.cos(angle) * ((seedRandom(x) * (branchMaxLength - branchMinLength) + branchMinLength));
             const endY = y + Math.sin(angle) * ((seedRandom(y) * (branchMaxLength - branchMinLength) + branchMinLength));
             context.quadraticCurveTo(curveControlPointX, curveControlPointY, endX, endY);
-            context.strokeStyle = colorWithVariation(branchColor, branchColorVariation);
+            context.strokeStyle = colorWithVariation(branchColor, branchColorVariation, endX);
             context.lineWidth = thickness;
             context.stroke();
 
