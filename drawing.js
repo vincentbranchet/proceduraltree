@@ -39,8 +39,8 @@ function drawTree(x, y, angle, depth, thickness, curveControlPointX = x, curveCo
     // Dessiner la branche principale
     context.beginPath();
     context.moveTo(x, y);
-    const endX = x + Math.cos(angle) * ((seedRandom(x) * (branchMaxLength - branchMinLength) + branchMinLength));
-    const endY = y + Math.sin(angle) * ((seedRandom(y) * (branchMaxLength - branchMinLength) + branchMinLength));
+    const endX = x + Math.cos(angle) * ((seedRandom(x, y) * (branchMaxLength - branchMinLength) + branchMinLength));
+    const endY = y + Math.sin(angle) * ((seedRandom(x, y) * (branchMaxLength - branchMinLength) + branchMinLength));
     context.quadraticCurveTo(curveControlPointX, curveControlPointY, endX, endY);
     context.strokeStyle = colorWithVariation(branchColor, branchColorVariation, endX);
     context.lineWidth = thickness;
