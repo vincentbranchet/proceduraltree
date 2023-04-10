@@ -16,42 +16,7 @@
 </head>
 
 <body>
-    <div id="plant-form"
-        style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); max-width: 80vw;background-color: white; padding: 0.5rem 1rem">
-        <p>Name the seed you want to plant. It will start growing today.</p>
-        <input type="text" id="form-seed" style="display: inherit; margin: 1rem 0; width: 100%" />
-        <div style="display: flex; justify-content: space-around">
-            <button id="form-send" style="display: inherit" onclick="plant()">Plant</button>
-            <button id="form-cancel" style="display: inherit" onclick="togglePlantForm()">Cancel</button>
-        </div>
-    </div>
-    <button style="position: absolute; bottom: 0; left: 0;" onclick="togglePlantForm()">Plant</button>
     <script>
-        function togglePlantForm() {
-            const form = document.getElementById('plant-form')
-
-            form.style.display = form.style.display === "none" ? "block" : "none";
-        }
-
-        function plant() {
-            const formInput = document.getElementById("form-seed")
-            const seedName = formInput.value;
-
-            seed = seedName
-
-            togglePlantForm()
-        }
-
-        function getDatePlantedFromSeed(seed) {
-            const dateIndex = seed.indexOf("DATE");
-
-            if (dateIndex !== -1) {
-                return new Date(seed.substring(dateIndex + 4));
-            } else {
-                throw new Error("Date error.")
-            }
-        }
-
         function createRandomGenerator(seed) {
             const constant = Math.pow(2, 13) + 1;
             const prime = 1987;
@@ -79,7 +44,7 @@
 
 
         // Définition de la graine
-        let seed = 'fpfuybDATE';
+        let seed = 'fpfuyb';
 
         // Création de la fonction de pseudogénération
         const seedRandom = createRandomGenerator(seed);
@@ -113,14 +78,12 @@
         // Ceci est du au fait l'algorithme (bancal) donne des valeurs qui dépendent du nombre de fois où la fonction a été appelée
         // Solution de contournement : on appelle seedRandom() une fois de plus qu'hier pour obtenir un chiffre différent
         const EVE = new Date(0);
-        const PLANTED = getDatePlantedFromSeed(seed);
         let TODAY = new Date();
         TODAY = new Date(TODAY.setDate(TODAY.getDate() + 0))
         const diffInDays = Math.round(Math.abs(TODAY - EVE) / 1000 / 60 / 60 / 24)
         for (let day = 0; day < diffInDays; day++) {
             seedRandom(TODAY.getTime())
         }
-        const iterationsToDraw = Math.round(Math.abs(TODAY - PLANTED) / 1000 / 60 / 60 / 24)
         const WIND_ANGLE = Math.PI / 64;
         const WIND_SPEED = 0.05;
         const SKY_COLOR_INDEX = Math.round(seedRandom(TODAY.getTime()) * (AVAILABLE_SKY_COLORS.length - 1))
@@ -210,24 +173,6 @@
             // (Math.random() * WIND_ANGLE - WIND_ANGLE / 2)
         }
 
-        // Fonction d'animation de l'arbre avec le vent
-        function animateTree() {
-            // Effacer le canevas
-            context.clearRect(0, 0, canvas.width, canvas.height);
-
-            // Calculer le nouvel angle du vent
-            const windAngle = Math.sin(Date.now() * WIND_SPEED) * WIND_ANGLE;
-
-            // Dessiner l'arbre avec l'angle du vent
-            drawTree(canvas.width / 2, canvas.height, (-Math.PI / 2) + windAngle, 0, branchThickness);
-
-            // Planifier la prochaine animation
-            setTimeout(() => {
-                requestAnimationFrame(animateTree);
-            }, 1000 / 1)
-        }
-
-        //animateTree();
         drawTree(canvas.width / 2, canvas.height, -Math.PI / 2, 0, branchThickness);
     </script>
 </body>
