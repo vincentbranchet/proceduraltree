@@ -17,6 +17,7 @@
 
 <body>
     <script type="text/javascript" src="./seeding.js"></script>
+    <script type="text/javascript" src="./drawing.js"></script>
     <script>
         // Définition de la graine
         let seed = '865489';
@@ -49,19 +50,10 @@
         const leafColorVariation = 0.5;
 
         // Définition des paramètres extérieurs
-        // On veut une valeur de probabilité différente chaque jour, or seedRandom() donne la même valeur peu importe ce qu'on lui passe
-        // Ceci est du au fait l'algorithme (bancal) donne des valeurs qui dépendent du nombre de fois où la fonction a été appelée
-        // Solution de contournement : on appelle seedRandom() une fois de plus qu'hier pour obtenir un chiffre différent
-        const EVE = new Date(0);
-        let TODAY = new Date();
-        TODAY = new Date(TODAY.setDate(TODAY.getDate() + 0))
-        const diffInDays = Math.round(Math.abs(TODAY - EVE) / 1000 / 60 / 60 / 24)
-        for (let day = 0; day < diffInDays; day++) {
-            seedRandom(TODAY.getTime())
-        }
+        const TODAY = new Date()
         const WIND_ANGLE = Math.PI / 64;
         const WIND_SPEED = 0.05;
-        const SKY_COLOR_INDEX = Math.round(seedRandom(TODAY.getTime()) * (AVAILABLE_SKY_COLORS.length - 1))
+        const SKY_COLOR_INDEX = Math.round(seedRandom(TODAY.toDateString()) * (AVAILABLE_SKY_COLORS.length - 1))
         const SKY_COLOR = AVAILABLE_SKY_COLORS[SKY_COLOR_INDEX];
 
         // Création du canvas
@@ -76,77 +68,6 @@
         // Dessin du décor
         context.fillStyle = SKY_COLOR;
         context.fillRect(0, 0, canvas.width, canvas.height);
-
-        // Fonction pour dessiner une feuille à une position donnée
-        function drawLeaf(x, y) {
-            context.beginPath();
-            context.ellipse(
-                x,
-                y,
-                leafSize,
-                leafSize * 2,
-                seedRandom(y) * 360,
-                0,
-                2 * Math.PI
-            );
-            context.fillStyle = colorWithVariation(leafColor, leafColorVariation, x);
-            context.fill();
-        }
-
-        function colorWithVariation(hexColor, variation, position) {
-            // Convertir le code couleur hexadécimal en valeurs RGB
-            let r = parseInt(hexColor.substr(1, 2), 16);
-            let g = parseInt(hexColor.substr(3, 2), 16);
-            let b = parseInt(hexColor.substr(5, 2), 16);
-
-            // Calculer une valeur de sombritude aléatoire entre 0 et 1
-            let randomVariation = seedRandom(position) * ((1 + variation) - (1 - variation)) + (1 - variation);
-
-            // Appliquer la valeur de sombritude pour rendre la couleur plus sombre
-            r = Math.min(Math.floor(r * randomVariation), 255);
-            g = Math.min(Math.floor(g * randomVariation), 255);
-            b = Math.min(Math.floor(b * randomVariation), 255);
-
-            // Convertir les valeurs RGB en un code couleur hexadécimal
-            let hexColorWithVariation = '#' + r.toString(16).padStart(2, '0') + g.toString(16).padStart(2, '0') + b.toString(16).padStart(2, '0');
-
-            return hexColorWithVariation;
-        }
-
-        // Fonction récursive pour dessiner l'arbre
-        function drawTree(x, y, angle, depth, thickness, curveControlPointX = x, curveControlPointY = y) {
-            // Dessiner la branche principale
-            context.beginPath();
-            context.moveTo(x, y);
-            const endX = x + Math.cos(angle) * ((seedRandom(x) * (branchMaxLength - branchMinLength) + branchMinLength));
-            const endY = y + Math.sin(angle) * ((seedRandom(y) * (branchMaxLength - branchMinLength) + branchMinLength));
-            context.quadraticCurveTo(curveControlPointX, curveControlPointY, endX, endY);
-            context.strokeStyle = colorWithVariation(branchColor, branchColorVariation, endX);
-            context.lineWidth = thickness;
-            context.stroke();
-
-            // Dessiner une feuille
-            const leafDice = seedRandom(x) - (depth - maxDepth) / 10;
-
-            if (leafDice < leafProbability) {
-                drawLeaf(endX, endY);
-            }
-
-            if (depth < maxDepth) {
-                // Dessiner les branches suivantes
-                const dx1 = endX + Math.cos(angle + branchAngle * (seedRandom(endX) * branchAngleVariation)) * ((seedRandom(endX) * (branchMaxLength - branchMinLength) + branchMinLength));
-                const dy1 = endY + Math.sin(angle + branchAngle * (seedRandom(endY) * branchAngleVariation)) * ((seedRandom(endY) * (branchMaxLength - branchMinLength) + branchMinLength));
-                const dx2 = endX + Math.cos(angle - branchAngle * (seedRandom(endX + 1) * branchAngleVariation)) * ((seedRandom(endX + 1) * (branchMaxLength - branchMinLength) + branchMinLength));
-                const dy2 = endY + Math.sin(angle - branchAngle * (seedRandom(endY + 1) * branchAngleVariation)) * ((seedRandom(endY + 1) * (branchMaxLength - branchMinLength) + branchMinLength));
-                const thicknessDice1 = thickness * (seedRandom(endX) * (1 - branchThicknessVariation) + branchThicknessVariation);
-                const thicknessDice2 = thickness * (seedRandom(endX) * (1 - branchThicknessVariation) + branchThicknessVariation);
-                const thickness1 = thicknessDice1 < branchThickness ? thicknessDice1 : branchThickness;
-                const thickness2 = thicknessDice2 < branchThickness ? thicknessDice2 : branchThickness;
-                drawTree(endX, endY, angle + branchAngleVariation, depth + 1, thickness1, dx1, dy1);
-                drawTree(endX, endY, angle - branchAngleVariation, depth + 1, thickness2, dx2, dy2);
-            }
-            // (Math.random() * WIND_ANGLE - WIND_ANGLE / 2)
-        }
 
         drawTree(canvas.width / 2, canvas.height, -Math.PI / 2, 0, branchThickness);
     </script>
