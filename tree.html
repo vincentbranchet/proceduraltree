@@ -21,7 +21,7 @@
     <script>
         // Définition de la graine
         const seed = 'seed';
-        const planted = new Date('2023 04 10')
+        const planted = new Date('2023 01 08')
 
         // Création de la fonction de pseudogénération
         const seedRandom = createRandomGenerator(seed);
@@ -70,8 +70,11 @@
         context.fillStyle = SKY_COLOR;
         context.fillRect(0, 0, canvas.width, canvas.height);
 
-        let drawn = 0
-        drawTree(canvas.width / 2, canvas.height, -Math.PI / 2, 0, branchThickness);
+        let drawn = 0;
+        const pipe = [];
+        pipe.push({x: (canvas.width / 2), y: canvas.height, angle: -Math.PI / 2, depth: 0, thickness: branchThickness})
+
+        drawTree(pipe[0].x, pipe[0].y, pipe[0].angle, pipe[0].depth, pipe[0].thickness);
     </script>
 </body>
 

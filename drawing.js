@@ -36,7 +36,10 @@ function colorWithVariation(hexColor, variation, position) {
 
 // Fonction récursive pour dessiner l'arbre
 function drawTree(x, y, angle, depth, thickness, curveControlPointX = x, curveControlPointY = y) {
-    if(drawn <= AGE) {
+    if (drawn <= AGE) {
+
+        pipe.shift();
+
         // Dessiner la branche principale
         context.beginPath();
         context.moveTo(x, y);
@@ -46,39 +49,46 @@ function drawTree(x, y, angle, depth, thickness, curveControlPointX = x, curveCo
         context.strokeStyle = colorWithVariation(branchColor, branchColorVariation, endX);
         context.lineWidth = thickness;
         context.stroke();
-    
+
         // Dessiner une feuille
         const leafDice = seedRandom(x) - (depth - maxDepth) / 10;
-    
+
         if (leafDice < leafProbability) {
             drawLeaf(endX, endY);
         }
-    
+
         if (depth < maxDepth) {
             // Dessiner les branches suivantes
             const d1 = getCurve(endX, endY, angle);
             const d2 = getCurve(endX + 1, endY + 1, angle);
-    
+
             const thickness1 = getThickness(endY, thickness);
             const thickness2 = getThickness(endY, thickness);
-            
-            drawTree(endX, endY, angle + branchAngleVariation, depth + 1, thickness1, d1.x, d1.y);
-            drawTree(endX, endY, angle - branchAngleVariation, depth + 1, thickness2, d2.x, d2.y);
+
+            pipe.push({ x: endX, y: endY, angle: angle + branchAngleVariation, depth: depth + 1, thickness: thickness1, ccpX: d1.x, ccpY: d1.y });
+            pipe.push({ x: endX, y: endY, angle: angle - branchAngleVariation, depth: depth + 1, thickness: thickness2, ccpX: d2.x, ccpY: d2.y });
         }
-    
-        drawn++
+
+        if (pipe[0] && pipe[1]) {
+            const next = pipe[0];
+            const next2 = pipe[1];
+            drawTree(next.x, next.y, next.angle, next.depth, next.thickness, next.ccpX, next.ccpY);
+            drawTree(next2.x, next2.y, next2.angle, next2.depth, next2.thickness, next2.ccpX, next2.ccpY);
+        }
+
+        drawn++;
     }
 }
 
 function getCurve(x, y, angle) {
     const curveX = x + Math.cos(angle + branchAngle * (seedRandom(x) * branchAngleVariation)) * ((seedRandom(x) * (branchMaxLength - branchMinLength) + branchMinLength));
     const curveY = y + Math.sin(angle + branchAngle * (seedRandom(y) * branchAngleVariation)) * ((seedRandom(y) * (branchMaxLength - branchMinLength) + branchMinLength));
-    return {curveX, curveY}
+    return { curveX, curveY }
 }
 
 function getThickness(x, thickness) {
     const dice = thickness * (seedRandom(x) * (1 - branchThicknessVariation) + branchThicknessVariation)
-    if(dice < branchThickness) {
+    if (dice < branchThickness) {
         return dice
     } else return branchThickness
 }
