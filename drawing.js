@@ -38,6 +38,7 @@ function colorWithVariation(hexColor, variation, position) {
 function drawTree(x, y, angle, depth, thickness, curveControlPointX = x, curveControlPointY = y) {
     if (drawn <= AGE) {
 
+        drawn++;
         pipe.shift();
 
         // Dessiner la branche principale
@@ -75,8 +76,6 @@ function drawTree(x, y, angle, depth, thickness, curveControlPointX = x, curveCo
             drawTree(next.x, next.y, next.angle, next.depth, next.thickness, next.ccpX, next.ccpY);
             drawTree(next2.x, next2.y, next2.angle, next2.depth, next2.thickness, next2.ccpX, next2.ccpY);
         }
-
-        drawn++;
     }
 }
 
