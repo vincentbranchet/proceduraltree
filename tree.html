@@ -18,44 +18,12 @@
 <body>
     <script type="text/javascript" src="./seeding.js"></script>
     <script type="text/javascript" src="./drawing.js"></script>
-    <script>
-        // Définition de la graine
-        const seed = 'seed';
-        const planted = new Date('2023 01 08')
+    <script type="module" src="./config.js"></script>
+    <script type="module">
+        import config from "./config.js"
 
-        // Création de la fonction de pseudogénération
-        const seedRandom = createRandomGenerator(seed);
+        const seedRandom = config.seedRandom
         // const seedRandom = Math.random
-
-        // Définition des constantes
-        const AVAILABLE_SKY_COLORS = ['#82AAE3', '#91D8E4', '#BFEAF5', '#B9F3FC', '#AEE2FF', '#93C6E7', '#93C6E7', '#FEDEFF', '#6E85B7', '#FFC18E', '#CA4E79', '#7A4069'];
-        const AVAILABLE_BRANCH_COLORS = ['#A9907E', '#F3DEBA', '#675D50', '#473C33', '#4C4B16', '#AA8B56', '#665A48', '#61481C', '#A97155', '#663300'];
-        const AVAILABLE_LEAF_COLORS = ['#ABC4AA', '#F7DB6A', '#EBB02D', '#AEC2B6', '#FC7300', '#D3756B', '#609966', '#82CD47', '#379237', '#F8C4B4', '#FFAE6D', '#007700'];
-
-        // Définition des paramètres de l'arbre
-        const branchColorindex = Math.round(seedRandom('branches') * (AVAILABLE_BRANCH_COLORS.length - 1))
-        const leafColorindex = Math.round(seedRandom('leaves') * (AVAILABLE_LEAF_COLORS.length - 1))
-        const maxDepth = 12; // Profondeur maximale de l'arbre
-        const branchMaxLength = 100; // Longueur maximale des branches
-        const branchMinLength = 10;
-        const branchAngle = Math.PI / 2; // Angle de séparation des branches
-        const branchThickness = 30; // Épaisseur de la branche principale
-        const branchColor = AVAILABLE_BRANCH_COLORS[branchColorindex]; // Couleur de la branche principale
-        const branchColorVariation = 0.2; // Amplitude de variation de couleur des branches (autour de 1)
-        const branchAngleVariation = Math.PI / 16; // Variation de l'angle de séparation des branches
-        const branchThicknessVariation = 0.6; // Variation de l'épaisseur des branches (0.5 = très varié, 1 = aucune variation)
-        const leafProbability = 0.9; // Probabilité de dessiner une feuille à l'extrémité d'une branche
-        const leafSize = 5; // Taille des feuilles
-        const leafColor = AVAILABLE_LEAF_COLORS[leafColorindex]; // Couleur des feuilles
-        const leafColorVariation = 0.5;
-
-        // Définition des paramètres extérieurs
-        const TODAY = new Date()
-        const AGE = Math.ceil((TODAY.getTime() - planted.getTime()) / 1000 / 60 / 60 / 24)
-        const WIND_ANGLE = Math.PI / 64;
-        const WIND_SPEED = 0.05;
-        const SKY_COLOR_INDEX = Math.round(seedRandom(TODAY.toDateString()) * (AVAILABLE_SKY_COLORS.length - 1))
-        const SKY_COLOR = AVAILABLE_SKY_COLORS[SKY_COLOR_INDEX];
 
         // Création du canvas
         const canvas = document.createElement("canvas");
@@ -67,12 +35,12 @@
         const context = canvas.getContext("2d");
 
         // Dessin du décor
-        context.fillStyle = SKY_COLOR;
+        context.fillStyle = config.skyColor;
         context.fillRect(0, 0, canvas.width, canvas.height);
 
         let drawn = 0;
         const pipe = [];
-        pipe.push({x: (canvas.width / 2), y: canvas.height, angle: -Math.PI / 2, depth: 0, thickness: branchThickness})
+        pipe.push({x: (canvas.width / 2), y: canvas.height, angle: -Math.PI / 2, depth: 0, thickness: config.branchThickness})
 
         drawTree(pipe[0].x, pipe[0].y, pipe[0].angle, pipe[0].depth, pipe[0].thickness);
     </script>

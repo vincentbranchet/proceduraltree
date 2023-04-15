@@ -1,0 +1,55 @@
+{
+    "colors": {
+        "sky": [
+            "#82AAE3",
+            "#91D8E4",
+            "#BFEAF5",
+            "#B9F3FC",
+            "#AEE2FF",
+            "#93C6E7",
+            "#93C6E7",
+            "#FEDEFF",
+            "#6E85B7",
+            "#FFC18E",
+            "#CA4E79",
+            "#7A4069"
+        ],
+        "branch": [
+            "#A9907E",
+            "#F3DEBA",
+            "#675D50",
+            "#473C33",
+            "#4C4B16",
+            "#AA8B56",
+            "#665A48",
+            "#61481C",
+            "#A97155",
+            "#663300"
+        ],
+        "leaf": [
+            "#ABC4AA",
+            "#F7DB6A",
+            "#EBB02D",
+            "#AEC2B6",
+            "#FC7300",
+            "#D3756B",
+            "#609966",
+            "#82CD47",
+            "#379237",
+            "#F8C4B4",
+            "#FFAE6D",
+            "#007700"
+        ]
+    },
+    "params": {
+        "maxDepth": 12,
+        "branchMaxLength": 100,
+        "branchMinLength": 10,
+        "branchThickness": 30,
+        "branchColorVariation": 0.2,
+        "branchThicknessVariation": 0.6,
+        "leafProbability": 0.9,
+        "leafSize": 5,
+        "leafColorVariation": 0.5
+    }
+}
