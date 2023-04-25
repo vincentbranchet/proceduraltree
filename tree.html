@@ -33,6 +33,9 @@
         let drawn = 0;
 
         drawTree(pipe[0].x, pipe[0].y, pipe[0].angle, pipe[0].depth, pipe[0].thickness);
+        // TODO : implement something to calm JS engine recursive alarms down
+        // maybe draw the tree in two times: first a blueprint (exportable), then the whole thing
+        // maybe remove recursivity & push stuff to pipe inside a while loop that checks if pipe is empty (or tree is fully drawn)
     </script>
 </body>
 
