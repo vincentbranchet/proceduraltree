@@ -1,11 +1,11 @@
-import { createRandomGenerator } from "./seeding.js"
+import { createRandomGenerator } from "../seed.js"
 
 async function config() {
-    const constants = await fetch('./config.json')
+    const constants = await fetch('../../config/config.json')
         .then(file => file.json())
         .catch(err => err)
 
-    const seed = await fetch('./seed.json')
+    const seed = await fetch('../../config/seed.json')
         .then(file => file.json())
         .then(seed => {
             seed.birthday = new Date(seed.birthday)

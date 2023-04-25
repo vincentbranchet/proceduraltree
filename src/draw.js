@@ -1,5 +1,5 @@
-import { pipe, context, drawn } from "./global.js"
-import config from "./config.js"
+import { pipe, context, drawn } from "./utils/global.js"
+import config from "./utils/config.js"
 
 const seedRandom = config.seedRandom
 

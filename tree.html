@@ -17,9 +17,9 @@
 
 <body>
     <script type="module">
-        import config from "./config.js"
-        import { drawTree } from "./drawing.js"
-        import { pipe, canvas, context } from "./global.js"
+        import config from "./src/utils/config.js"
+        import { drawTree } from "./src/draw.js"
+        import { pipe, canvas, context } from "./src/utils/global.js"
 
         canvas.width = document.body.clientWidth;
         canvas.height = window.innerHeight;
