@@ -1,4 +1,4 @@
-function createRandomGenerator(seed) {
+export function createRandomGenerator(seed) {
     return function(x = 0, y = 0) {
         const hashedSeed = hashCode(seed);
         const hashedX = hashCode(x.toString());

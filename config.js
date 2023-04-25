@@ -1,3 +1,5 @@
+import { createRandomGenerator } from "./seeding.js"
+
 async function config() {
     const constants = await fetch('./config.json')
         .then(file => file.json())
@@ -30,7 +32,7 @@ async function config() {
         const index = Math.round(random(new Date().toDateString()) * (colors.length - 1))
         return colors[index]
     }
-    
+
     variables.seedRandom = createRandomGenerator(seed.name)
     variables.branchColor = pick(constants.colors.branch, variables.seedRandom)
     variables.leafColor = pick(constants.colors.leaf, variables.seedRandom)
