@@ -17,27 +17,11 @@
 
 <body>
     <script type="module">
-        import { config } from "./src/utils/config.js"
-        import { drawTree } from "./src/draw.js"
-        import { global } from "./src/utils/global.js"
+        import App from "./src/app.js"
+        
+        const app = new App()
 
-        global.canvas.width = document.body.clientWidth;
-        global.canvas.height = window.innerHeight;
-        document.body.appendChild(global.canvas);
-
-        global.context.fillStyle = config.skyColor;
-        global.context.fillRect(0, 0, global.canvas.width, global.canvas.height);
-
-        global.addToPipe({ x: (global.canvas.width / 2), y: global.canvas.height, angle: -Math.PI / 2, depth: 0, thickness: config.branchThickness });
-
-        while (global.pipe.length > 0 && global.drawn.value <= config.age) {
-            const next = global.pipe[0];
-
-            drawTree(next.x, next.y, next.angle, next.depth, next.thickness);
-
-            global.drawn.value++;
-            global.shiftPipe();
-        }
+        app.start()
     </script>
 </body>
 

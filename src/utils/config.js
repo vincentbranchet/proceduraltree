@@ -1,8 +1,8 @@
-import { createRandomGenerator } from "../seed.js"
+import { hashCode } from "./helpers.js"
 
 class Config {
     constructor(constants, seed) {    
-        this.seedRandom = createRandomGenerator(seed.name)
+        this.seedRandom = this.createRandomGenerator(seed.name)
         this.branchAngle = Math.PI / 2
         this.branchAngleVariation = Math.PI / 16
         this.branchColor = this.pick(constants.colors.branch, this.seedRandom)
@@ -11,6 +11,17 @@ class Config {
         this.age = Math.ceil((new Date().getTime() - seed.birthday.getTime()) / 1000 / 60 / 60 / 24)
 
         this.parse(constants.params)
+    }
+
+    createRandomGenerator(seed) {
+        return function(x = 0, y = 0) {
+            const hashedSeed = hashCode(seed);
+            const hashedX = hashCode(x.toString());
+            const hashedY = hashCode(y.toString());
+            const combinedSeed = hashedSeed + hashedX + hashedY;
+            const random = Math.sin(combinedSeed) * 10000;
+            return random - Math.floor(random);
+        };
     }
 
     parse(obj) {
