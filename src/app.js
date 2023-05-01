@@ -12,7 +12,7 @@ export default class App {
     start() {
         this.buildCanvas()
 
-        this.addToPipe({ x: (this.canvas.width / 2), y: this.canvas.height, angle: -Math.PI / 2, depth: 0, thickness: config.branchThickness });
+        this.pipe.push({ x: (this.canvas.width / 2), y: this.canvas.height, angle: -Math.PI / 2, depth: 0, thickness: config.branchThickness });
 
         while (this.pipe.length > 0 && this.drawn.value <= config.age) {
             const next = this.pipe[0];
@@ -20,7 +20,7 @@ export default class App {
             this.drawTree(next.x, next.y, next.angle, next.depth, next.thickness);
 
             this.drawn.value++;
-            this.shiftPipe();
+            this.pipe.shift();
         }
     }
 
@@ -59,8 +59,8 @@ export default class App {
             const thickness1 = getThickness(endY, thickness, config.branchThickness, config.branchThicknessVariation, config.seedRandom);
             const thickness2 = getThickness(endY, thickness, config.branchThickness, config.branchThicknessVariation, config.seedRandom);
     
-            this.addToPipe({ x: endX, y: endY, angle: angle + config.branchAngleVariation, depth: depth + 1, thickness: thickness1, ccpX: d1.x, ccpY: d1.y });
-            this.addToPipe({ x: endX, y: endY, angle: angle - config.branchAngleVariation, depth: depth + 1, thickness: thickness2, ccpX: d2.x, ccpY: d2.y });
+            this.pipe.push({ x: endX, y: endY, angle: angle + config.branchAngleVariation, depth: depth + 1, thickness: thickness1, ccpX: d1.x, ccpY: d1.y });
+            this.pipe.push({ x: endX, y: endY, angle: angle - config.branchAngleVariation, depth: depth + 1, thickness: thickness2, ccpX: d2.x, ccpY: d2.y });
         }
     }
 
@@ -78,13 +78,5 @@ export default class App {
         );
         this.context.fillStyle = colorWithVariation(config.leafColor, config.leafColorVariation, x, config.seedRandom);
         this.context.fill();
-    }
-    
-    addToPipe(value) {
-        this.pipe.push(value)
-    }
-
-    shiftPipe() {
-        this.pipe.shift()
     }
 }
