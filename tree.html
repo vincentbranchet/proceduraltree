@@ -19,23 +19,25 @@
     <script type="module">
         import config from "./src/utils/config.js"
         import { drawTree } from "./src/draw.js"
-        import { pipe, canvas, context } from "./src/utils/global.js"
+        import { global } from "./src/utils/global.js"
 
-        canvas.width = document.body.clientWidth;
-        canvas.height = window.innerHeight;
-        document.body.appendChild(canvas);
+        global.canvas.width = document.body.clientWidth;
+        global.canvas.height = window.innerHeight;
+        document.body.appendChild(global.canvas);
 
-        context.fillStyle = config.skyColor;
-        context.fillRect(0, 0, canvas.width, canvas.height);
+        global.context.fillStyle = config.skyColor;
+        global.context.fillRect(0, 0, global.canvas.width, global.canvas.height);
 
-        pipe.push({ x: (canvas.width / 2), y: canvas.height, angle: -Math.PI / 2, depth: 0, thickness: config.branchThickness })
+        global.addToPipe({ x: (global.canvas.width / 2), y: global.canvas.height, angle: -Math.PI / 2, depth: 0, thickness: config.branchThickness });
+        
+        while(global.pipe.length > 0 && global.drawn.value <= config.age) {
+            const next = global.pipe[0];
 
-        let drawn = 0;
-
-        drawTree(pipe[0].x, pipe[0].y, pipe[0].angle, pipe[0].depth, pipe[0].thickness);
-        // TODO : implement something to calm JS engine recursive alarms down
-        // maybe draw the tree in two times: first a blueprint (exportable), then the whole thing
-        // maybe remove recursivity & push stuff to pipe inside a while loop that checks if pipe is empty (or tree is fully drawn)
+            drawTree(next.x, next.y, next.angle, next.depth, next.thickness);
+            
+            global.drawn.value++;
+            global.shiftPipe();
+        }
     </script>
 </body>
 

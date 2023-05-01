@@ -1,9 +1,18 @@
-export const pipe = []
+class Global {
+    constructor() {
+        this.pipe = [],
+        this.drawn = {value: 0},
+        this.canvas = document.createElement('canvas'),
+        this.context = this.canvas.getContext('2d')
+    }
 
-export const drawn = {value: 0}
+    addToPipe(value) {
+        this.pipe.push(value)
+    }
 
-// Création du canvas
-export const canvas = document.createElement("canvas")
+    shiftPipe() {
+        this.pipe.shift()
+    }
+}
 
-// Récupération du contexte de rendu
-export const context = canvas.getContext("2d")
+export const global = new Global()

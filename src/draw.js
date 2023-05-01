@@ -1,12 +1,12 @@
-import { pipe, context, drawn } from "./utils/global.js"
+import { global } from "./utils/global.js"
 import config from "./utils/config.js"
 
 const seedRandom = config.seedRandom
 
 // Fonction pour dessiner une feuille à une position donnée
 function drawLeaf(x, y) {
-    context.beginPath();
-    context.ellipse(
+    global.context.beginPath();
+    global.context.ellipse(
         x,
         y,
         config.leafSize,
@@ -15,8 +15,8 @@ function drawLeaf(x, y) {
         0,
         2 * Math.PI
     );
-    context.fillStyle = colorWithVariation(config.leafColor, config.leafColorVariation, x);
-    context.fill();
+    global.context.fillStyle = colorWithVariation(config.leafColor, config.leafColorVariation, x);
+    global.context.fill();
 }
 
 function colorWithVariation(hexColor, variation, position) {
@@ -41,19 +41,15 @@ function colorWithVariation(hexColor, variation, position) {
 
 // Fonction récursive pour dessiner l'arbre
 export function drawTree(x, y, angle, depth, thickness, curveControlPointX = x, curveControlPointY = y) {
-    if (drawn.value <= config.age) {
-        drawn.value++;
-        pipe.shift();
-
         // Dessiner la branche principale
-        context.beginPath();
-        context.moveTo(x, y);
+        global.context.beginPath();
+        global.context.moveTo(x, y);
         const endX = x + Math.cos(angle) * ((seedRandom(x, y) * (config.branchMaxLength - config.branchMinLength) + config.branchMinLength));
         const endY = y + Math.sin(angle) * ((seedRandom(x, y) * (config.branchMaxLength - config.branchMinLength) + config.branchMinLength));
-        context.quadraticCurveTo(curveControlPointX, curveControlPointY, endX, endY);
-        context.strokeStyle = colorWithVariation(config.branchColor, config.branchColorVariation, endX);
-        context.lineWidth = thickness;
-        context.stroke();
+        global.context.quadraticCurveTo(curveControlPointX, curveControlPointY, endX, endY);
+        global.context.strokeStyle = colorWithVariation(config.branchColor, config.branchColorVariation, endX);
+        global.context.lineWidth = thickness;
+        global.context.stroke();
 
         // Dessiner une feuille
         const leafDice = seedRandom(x) - (depth - config.maxDepth) / 10;
@@ -70,17 +66,9 @@ export function drawTree(x, y, angle, depth, thickness, curveControlPointX = x, 
             const thickness1 = getThickness(endY, thickness);
             const thickness2 = getThickness(endY, thickness);
 
-            pipe.push({ x: endX, y: endY, angle: angle + config.branchAngleVariation, depth: depth + 1, thickness: thickness1, ccpX: d1.x, ccpY: d1.y });
-            pipe.push({ x: endX, y: endY, angle: angle - config.branchAngleVariation, depth: depth + 1, thickness: thickness2, ccpX: d2.x, ccpY: d2.y });
+            global.addToPipe({ x: endX, y: endY, angle: angle + config.branchAngleVariation, depth: depth + 1, thickness: thickness1, ccpX: d1.x, ccpY: d1.y });
+            global.addToPipe({ x: endX, y: endY, angle: angle - config.branchAngleVariation, depth: depth + 1, thickness: thickness2, ccpX: d2.x, ccpY: d2.y });
         }
-
-        if (pipe[0] && pipe[1]) {
-            const next = pipe[0];
-            const next2 = pipe[1];
-            drawTree(next.x, next.y, next.angle, next.depth, next.thickness, next.ccpX, next.ccpY);
-            drawTree(next2.x, next2.y, next2.angle, next2.depth, next2.thickness, next2.ccpX, next2.ccpY);
-        }
-    }
 }
 
 function getCurve(x, y, angle) {
