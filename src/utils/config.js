@@ -1,45 +1,45 @@
 import { createRandomGenerator } from "../seed.js"
 
-async function config() {
-    const constants = await fetch('../../config/config.json')
-        .then(file => file.json())
-        .catch(err => err)
+class Config {
+    constructor(constants, seed) {    
+        this.seedRandom = createRandomGenerator(seed.name)
+        this.branchAngle = Math.PI / 2
+        this.branchAngleVariation = Math.PI / 16
+        this.branchColor = this.pick(constants.colors.branch, this.seedRandom)
+        this.leafColor = this.pick(constants.colors.leaf, this.seedRandom)
+        this.skyColor = this.pickDaily(constants.colors.sky, this.seedRandom)
+        this.age = Math.ceil((new Date().getTime() - seed.birthday.getTime()) / 1000 / 60 / 60 / 24)
 
-    const seed = await fetch('../../config/seed.json')
-        .then(file => file.json())
-        .then(seed => {
-            seed.birthday = new Date(seed.birthday)
-            return seed
-        })
-        .catch(err => err)
-
-    let variables = {
-        age: undefined,
-        branchAngle: Math.PI / 2,
-        branchAngleVariation: Math.PI / 16,
-        branchColor: undefined,
-        leafColor: undefined,
-        skyColor: undefined,
-        seedRandom: undefined
+        this.parse(constants.params)
     }
 
-    function pick(colors, random) {
+    parse(obj) {
+        for(let i in obj) {
+            this[i] = obj[i]
+        }
+    }
+
+    pick(colors, random) {
         const index = Math.round(random('branches') * (colors.length - 1))
         return colors[index]
     }
 
-    function pickDaily(colors, random) {
+    pickDaily(colors, random) {
         const index = Math.round(random(new Date().toDateString()) * (colors.length - 1))
         return colors[index]
     }
-
-    variables.seedRandom = createRandomGenerator(seed.name)
-    variables.branchColor = pick(constants.colors.branch, variables.seedRandom)
-    variables.leafColor = pick(constants.colors.leaf, variables.seedRandom)
-    variables.skyColor = pickDaily(constants.colors.sky, variables.seedRandom)
-    variables.age = Math.ceil((new Date().getTime() - seed.birthday.getTime()) / 1000 / 60 / 60 / 24)
-
-    return { ...constants.params, ...variables }
 }
 
-export default await config()
+const constants = await fetch('../../config/config.json')
+    .then(file => file.json())
+    .catch(err => err)
+
+const seed = await fetch('../../config/seed.json')
+    .then(file => file.json())
+    .then(seed => {
+        seed.birthday = new Date(seed.birthday)
+        return seed
+    })
+    .catch(err => err)
+
+export const config = new Config(constants, seed)
