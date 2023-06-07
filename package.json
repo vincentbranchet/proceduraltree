@@ -15,8 +15,5 @@
   "bugs": {
     "url": "https://github.com/vincentbranchet/proceduraltree/issues"
   },
-  "homepage": "https://github.com/vincentbranchet/proceduraltree#readme",
-  "dependencies": {
-    "fastify": "^4.17.0"
-  }
+  "homepage": "https://github.com/vincentbranchet/proceduraltree#readme"
 }
