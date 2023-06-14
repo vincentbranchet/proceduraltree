@@ -2,9 +2,11 @@
   "name": "project-trees",
   "version": "1.0.0",
   "description": "A virtual tree generator.",
-  "main": "index.html",
+  "type": "module",
+  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "fastify start index.js"
   },
   "repository": {
     "type": "git",
@@ -15,5 +17,9 @@
   "bugs": {
     "url": "https://github.com/vincentbranchet/proceduraltree/issues"
   },
-  "homepage": "https://github.com/vincentbranchet/proceduraltree#readme"
+  "homepage": "https://github.com/vincentbranchet/proceduraltree#readme",
+  "dependencies": {
+    "@fastify/static": "^6.10.2",
+    "fastify": "^4.18.0"
+  }
 }
