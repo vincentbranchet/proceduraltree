@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/vincentbranchet/proceduraltree#readme",
   "dependencies": {
+    "@fastify/mysql": "^4.1.0",
     "@fastify/static": "^6.10.2",
     "fastify": "^4.18.0"
   }
