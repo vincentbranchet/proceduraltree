@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "A virtual tree generator.",
   "type": "module",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "fastify start index.js"
@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/vincentbranchet/proceduraltree#readme",
   "dependencies": {
+    "@fastify/env": "^4.2.0",
     "@fastify/mysql": "^4.1.0",
     "@fastify/static": "^6.10.2",
     "fastify": "^4.18.0"

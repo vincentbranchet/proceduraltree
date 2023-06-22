@@ -45,7 +45,7 @@ const constants = await fetch('/config')
     .then(file => file.json())
     .catch(err => err)
 
-const seed = await fetch('/seed')
+const seed = await fetch('/../public/config/seed.json')
     .then(file => file.json())
     .then(seed => {
         seed.birthday = new Date(seed.birthday)

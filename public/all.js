@@ -82,7 +82,7 @@ class Config {
 }
 
 const start = async () => {
-    const constants = await fetch('/../public/config/config.json')
+    const constants = await fetch('/config')
         .then(file => file.json())
         .catch(err => err)
     
