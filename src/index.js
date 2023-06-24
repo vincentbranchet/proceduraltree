@@ -71,20 +71,20 @@ const start = async () => {
     })
 
     server.get('/:hash', (request, reply) => {
+
         server.mysql.query(
             'SELECT * FROM seeds WHERE hash = ?',
             [request.params.hash],
             (err, result) => {
                 if (result.length === 1) {
                     try {
-                        // TODO : find a proper way to send seed data to client
-                        fs.writeFileSync('./public/config/seed.json', JSON.stringify(
-                            {
-                                name: result[0].name,
-                                birthday: result[0].planted
-                            },
-                        ), 'utf8')
-                        reply.sendFile('index.html')
+                        const js = fs.readFileSync('public/all.js')
+                        const html = fs.readFileSync('public/index.html')
+
+                        const clientJs = js.toString().replace('NAME', result[0].name).replace('BIRTHDAY', result[0].planted)
+                        const clientHtml = html.toString().replace('PLACEHOLDER_APP_CODE', clientJs).replace('PLACEHOLDER_TREE_NAME', result[0].name)
+
+                        reply.header('Content-Type', 'text/html').send(clientHtml)
                     } catch (err) {
                         reply.send(err)
                     }

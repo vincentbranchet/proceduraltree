@@ -86,13 +86,11 @@ const start = async () => {
         .then(file => file.json())
         .catch(err => err)
     
-    const seed = await fetch('/../public/config/seed.json')
-        .then(file => file.json())
-        .then(seed => {
-            seed.birthday = new Date(seed.birthday)
-            return seed
-        })
-        .catch(err => err)
+    const seed = {
+        name: 'NAME',
+        birthday: 'BIRTHDAY'
+    }
+    seed.birthday = new Date(seed.birthday)
     
     const config = new Config(constants, seed)
     
