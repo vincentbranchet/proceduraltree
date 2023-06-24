@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "A virtual tree generator.",
   "type": "module",
-  "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "fastify start index.js"
+    "start": "node back/index.js",
+    "build": "esbuild front/index.js --bundle --outfile=front/build/index.js"
   },
   "repository": {
     "type": "git",
@@ -23,5 +23,8 @@
     "@fastify/mysql": "^4.1.0",
     "@fastify/static": "^6.10.2",
     "fastify": "^4.18.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.18.7"
   }
 }

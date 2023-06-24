@@ -1,7 +1,7 @@
-import { config } from "./utils/config.js"
-import { colorWithVariation, getCurve, getThickness } from "./utils/helpers.js"
+import { config } from "./config.js"
+import { colorWithVariation, getCurve, getThickness } from "./helpers.js"
 
-export default class App {
+export class App {
     constructor() {
         this.pipe = [],
         this.drawn = {value: 0},

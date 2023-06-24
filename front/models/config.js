@@ -1,7 +1,7 @@
 import { hashCode } from "./helpers.js"
 
 class Config {
-    constructor(constants, seed) {    
+    constructor(constants, seed) {
         this.seedRandom = this.createRandomGenerator(seed.name)
         this.branchAngle = Math.PI / 2
         this.branchAngleVariation = Math.PI / 16
@@ -14,7 +14,7 @@ class Config {
     }
 
     createRandomGenerator(seed) {
-        return function(x = 0, y = 0) {
+        return function (x = 0, y = 0) {
             const hashedSeed = hashCode(seed);
             const hashedX = hashCode(x.toString());
             const hashedY = hashCode(y.toString());
@@ -25,7 +25,7 @@ class Config {
     }
 
     parse(obj) {
-        for(let i in obj) {
+        for (let i in obj) {
             this[i] = obj[i]
         }
     }
@@ -41,16 +41,12 @@ class Config {
     }
 }
 
-const constants = await fetch('/config')
-    .then(file => file.json())
-    .catch(err => err)
+const constants = 'PLACEHOLDER_CONFIG'
 
-const seed = await fetch('/../public/config/seed.json')
-    .then(file => file.json())
-    .then(seed => {
-        seed.birthday = new Date(seed.birthday)
-        return seed
-    })
-    .catch(err => err)
+const seed = {
+    name: 'PLACEHOLDER_NAME',
+    birthday: 'PLACEHOLDER_BIRTHDAY'
+}
+seed.birthday = new Date(seed.birthday)
 
 export const config = new Config(constants, seed)

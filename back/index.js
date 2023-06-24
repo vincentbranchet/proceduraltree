@@ -78,10 +78,11 @@ const start = async () => {
             (err, result) => {
                 if (result.length === 1) {
                     try {
-                        const js = fs.readFileSync('public/all.js')
-                        const html = fs.readFileSync('public/index.html')
+                        const js = fs.readFileSync('front/build/index.js')
+                        const html = fs.readFileSync('front/index.html')
+                        const config = fs.readFileSync('back/config.json')
 
-                        const clientJs = js.toString().replace('NAME', result[0].name).replace('BIRTHDAY', result[0].planted)
+                        const clientJs = js.toString().replace('PLACEHOLDER_NAME', result[0].name).replace('PLACEHOLDER_BIRTHDAY', result[0].planted).replace('\"PLACEHOLDER_CONFIG\"', config)
                         const clientHtml = html.toString().replace('PLACEHOLDER_APP_CODE', clientJs).replace('PLACEHOLDER_TREE_NAME', result[0].name)
 
                         reply.header('Content-Type', 'text/html').send(clientHtml)
