@@ -50,6 +50,10 @@
             font-size: 1.5rem;
             height: 2.5rem;
         }
+        form .error {
+            color: red;
+            font-size: 1.2rem;
+        }
     </style>
 </head>
 
@@ -61,11 +65,11 @@
                 grandir au fil des années !
             </div>
             <div class="description">
-                Une fois planté, votre arbre est disponible à vie sur le lien qu'on vous donne. Pas de mot de passe à
+                Une fois planté, votre arbre est disponible à vie sur un simple lien. Pas de mot de passe à
                 entrer, pas d'appli à installer. Revenez le voir et partagez le autant que vous le voulez.
             </div>
             <div class="description">
-                La forme et la couleur de nos arbres dépendent du nom que vous lui donnerez. Comme votre enfant, votre arbre est unique !
+                La forme et la couleur de nos arbres dépendent du nom que vous lui donnerez. Votre arbre est comme votre enfant : unique !
             </div>
         </div>
         <div class="form-wrapper">
@@ -76,11 +80,11 @@
                 </div>
                 <div class="form-elt">
                     <label for="date">Date à laquelle je veux le planter</label>
-                    <input type="date" name="date">
+                    <input type="date" name="date" required>
                     <div class="info">Si vous choisissz une date dans le passé, votre arbre sera créé comme s'il avait poussé normalement depuis cette date.</div>
                 </div>
                 <div class="form-elt">
-                    <input id="action" type="submit" value="Planter mon arbre">
+                    <input id="action" type="submit" value="Planter mon arbre" required>
                 </div>
             </form>
         </div>
