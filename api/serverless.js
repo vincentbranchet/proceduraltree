@@ -2,7 +2,7 @@ import Fastify from "fastify"
 import fastifyMysql from "@fastify/mysql"
 import fastifyEnv from "@fastify/env"
 import fastifyFormbody from "@fastify/formbody"
-import routes from "./routes.js"
+import routes from "../back/routes.js"
 
 const server = new Fastify({ logger: true })
 
