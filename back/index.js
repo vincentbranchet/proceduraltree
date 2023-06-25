@@ -13,7 +13,7 @@ const env = {
         properties: {
             PORT: {
                 type: 'string',
-                default: 80
+                default: process.env.PORT || 3000
             }
         }
     },
@@ -29,7 +29,7 @@ const start = async () => {
     server.register(fastifyFormbody)
     server.register(routes)
 
-    server.listen({ port: 80 }, (err, address) => {
+    server.listen({ port: process.env.PORT }, (err, address) => {
         if (err) {
             server.log.error(err)
         }
