@@ -1,1 +1,1 @@
-worker:  node back/index.js
+worker: node back/index.js
