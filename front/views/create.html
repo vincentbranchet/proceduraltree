@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon arbre de vie</title>
+    <style>
+        .body {
+            margin: 0;
+            width: 100%;
+        }
+        .main-wrapper {
+            margin: auto;
+            max-width: 1200px;
+        }
+        .text-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            margin: 1rem;
+        }
+        .text-wrapper div {
+            margin: 1rem 0;
+        }
+        .intro {
+            font-size: 1.5rem;
+        }
+        .description {
+            font-size: 1.2rem;
+        }
+        .form-wrapper {
+            margin: auto;
+            font-size: 1.5rem;
+            max-width: 700px;
+        }
+        .form-wrapper input {
+            height: 1.5rem;
+        }
+        .form-elt {
+            display: flex;
+            flex-direction: column;
+            margin: 1rem;
+        }
+        .form-elt .info {
+            font-size: 1rem;
+        }
+        #action {
+            font-size: 1.5rem;
+            height: 2.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-wrapper">
+        <div class="text-wrapper">
+            <div class="intro">
+                Bienvenue chez Mon Arbre de Vie. Plantez un arbre le jour de la naissance de votre enfant, et regardez le
+                grandir au fil des années !
+            </div>
+            <div class="description">
+                Une fois planté, votre arbre est disponible à vie sur le lien qu'on vous donne. Pas de mot de passe à
+                entrer, pas d'appli à installer. Revenez le voir et partagez le autant que vous le voulez.
+            </div>
+            <div class="description">
+                La forme et la couleur de nos arbres dépendent du nom que vous lui donnerez. Comme votre enfant, votre arbre est unique !
+            </div>
+        </div>
+        <div class="form-wrapper">
+            <form method="POST" action="/create">
+                <div class="form-elt">
+                    <label for="name">Nom de mon arbre</label>
+                    <input type="text" name="name">
+                </div>
+                <div class="form-elt">
+                    <label for="date">Date à laquelle je veux le planter</label>
+                    <input type="date" name="date">
+                    <div class="info">Si vous choisissz une date dans le passé, votre arbre sera créé comme s'il avait poussé normalement depuis cette date.</div>
+                </div>
+                <div class="form-elt">
+                    <input id="action" type="submit" value="Planter mon arbre">
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>
