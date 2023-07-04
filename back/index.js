@@ -29,7 +29,7 @@ const start = async () => {
     server.register(fastifyFormbody)
     server.register(routes)
 
-    server.listen({ port: process.env.PORT }, (err, address) => {
+    server.listen({ port: process.env.PORT, host: "0.0.0.0" }, (err, address) => {
         if (err) {
             server.log.error(err)
         }

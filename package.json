@@ -2,9 +2,6 @@
   "name": "project-trees",
   "version": "1.0.0",
   "description": "A virtual tree generator.",
-  "engines": {
-    "node": "18.16.0"
-  },
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
