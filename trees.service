@@ -1,0 +1,12 @@
+[Unit]
+Description=Trees
+After=network.target
+
+[Service]
+Restart=on-failure
+ExecStart=/usr/bin/env node /usr/bin/trees/index.js
+EnvironmentFile=/usr/bin/trees/.env
+WorkingDirectory=/usr/bin/trees
+
+[Install]
+WantedBy=multi-user.target
