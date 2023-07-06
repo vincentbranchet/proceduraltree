@@ -2,11 +2,11 @@
   "name": "project-trees",
   "version": "1.0.0",
   "description": "A virtual tree generator.",
-  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node back/index.js",
-    "build": "esbuild front/index.js --bundle --outfile=front/build/index.js"
+    "build-front": "esbuild front/index.js --bundle --outfile=front/build/index.js",
+    "build-back": "esbuild back/index.js --bundle --platform=node --outfile=back/build/index.js"
   },
   "repository": {
     "type": "git",
