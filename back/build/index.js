@@ -48934,9 +48934,9 @@ async function routes(server2, options) {
       (err, result) => {
         if (result.length === 1) {
           try {
-            const js = import_fs.default.readFileSync("front/build/index.js");
+            const js = import_fs.default.readFileSync(process.env.FRONT_JS);
             const html = import_fs.default.readFileSync("front/views/index.html");
-            const config = import_fs.default.readFileSync("back/config.json");
+            const config = import_fs.default.readFileSync(process.env.BACK_CONFIG);
             const clientJs = js.toString().replace("PLACEHOLDER_NAME", result[0].name).replace("PLACEHOLDER_BIRTHDAY", result[0].planted).replace('"PLACEHOLDER_CONFIG"', config);
             const clientHtml = html.toString().replace("PLACEHOLDER_APP_CODE", clientJs).replace("PLACEHOLDER_TREE_NAME", result[0].name);
             reply.header("Content-Type", "text/html").send(clientHtml);

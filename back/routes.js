@@ -47,9 +47,9 @@ export default async function routes(server, options) {
             (err, result) => {
                 if (result.length === 1) {
                     try {
-                        const js = fs.readFileSync('front/build/index.js')
+                        const js = fs.readFileSync(process.env.FRONT_JS)
                         const html = fs.readFileSync('front/views/index.html')
-                        const config = fs.readFileSync('back/config.json')
+                        const config = fs.readFileSync(process.env.BACK_CONFIG)
 
                         const clientJs = js.toString().replace('PLACEHOLDER_NAME', result[0].name).replace('PLACEHOLDER_BIRTHDAY', result[0].planted).replace('\"PLACEHOLDER_CONFIG\"', config)
                         const clientHtml = html.toString().replace('PLACEHOLDER_APP_CODE', clientJs).replace('PLACEHOLDER_TREE_NAME', result[0].name)
