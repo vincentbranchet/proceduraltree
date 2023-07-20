@@ -1,5 +1,6 @@
 import crypto from "crypto"
 import fs from "fs"
+import Stripe from 'stripe'
 
 export default async function routes(server, options) {
     // INDEX
@@ -8,39 +9,10 @@ export default async function routes(server, options) {
         reply.header('Content-Type', 'text/html').send(html)
     })
 
-    // CREATE
-    server.post('/create', {
-        schema: {
-            body: {
-                type: 'object',
-                properties: {
-                    name: { type: 'string' },
-                    date: { type: 'string' }
-                },
-                required: ['name', 'date']
-            }
-        }
-    }, (request, reply) => {
-        const toHash = request.body.name + request.body.date
-        const hash = crypto.createHash('md5').update(toHash).digest('hex')
-        const datetime = new Date(request.body.date).toISOString().slice(0, 19).replace('T', ' ')
-
-        server.mysql.query(
-            'INSERT INTO seeds ( name, planted, hash ) VALUES (?, ?, ?)',
-            [request.body.name, datetime, hash],
-            (err, result) => {
-                if (err)
-                    reply.send(err)
-                else {
-                    reply.redirect('/' + hash)
-                }
-            }
-        )
-    })
-
     // SHOW
     server.get('/:hash', (request, reply) => {
-
+        const { first_sight } = request.query
+        // if first_sight is true, then show popup in html template
         server.mysql.query(
             'SELECT * FROM seeds WHERE hash = ?',
             [request.params.hash],
@@ -63,4 +35,50 @@ export default async function routes(server, options) {
         )
     })
 
+    // CHECKOUT - Process
+    server.post('/checkout', async (request, reply) => {
+        const stripe = new Stripe(process.env.STRIPE_API_KEY)
+        const { name, date } = request.body
+
+        const session = await stripe.checkout.sessions.create({
+            line_items: [
+                {
+                    // Virtualyptus - 14,99€
+                    price: process.env.STRIPE_PRODUCT_KEY,
+                    quantity: 1,
+                },
+            ],
+            mode: 'payment',
+            success_url: `http://${process.env.HOST_NAME}/checkout-success?name=${name}&date=${date}`,
+            cancel_url: `http://${process.env.HOST_NAME}/`,
+        });
+
+        reply.redirect(303, session.url);
+    })
+
+    // CHECKOUT - Success
+    server.get('/checkout-success', (request, reply) => {
+        const { name, date } = request.query
+
+        try {
+            const toHash = name + date
+            const hash = crypto.createHash('md5').update(toHash).digest('hex')
+            const datetime = new Date(date).toISOString().slice(0, 19).replace('T', ' ')
+    
+            server.mysql.query(
+                'INSERT INTO seeds ( name, planted, hash ) VALUES (?, ?, ?)',
+                [name, datetime, hash],
+                (err, result) => {
+                    if (err)
+                        reply.send(err)
+                    else {
+                        // TODO : add 'first_sight' param
+                        reply.redirect('/' + hash)
+                    }
+                }
+            )
+        } catch (err) {
+            reply.send(err)
+        }
+    })
 }
