@@ -1181,7 +1181,7 @@ var require_plugin = __commonJS({
       this._promise = null;
     }
     inherits(Plugin, EE);
-    Plugin.prototype.exec = function(server2, cb) {
+    Plugin.prototype.exec = function(server, cb) {
       const func = this.func;
       let completed = false;
       const name = this.name;
@@ -1192,13 +1192,13 @@ var require_plugin = __commonJS({
       }
       if (!this.isAfter) {
         try {
-          this.server = this.parent.override(server2, func, this.opts);
+          this.server = this.parent.override(server, func, this.opts);
         } catch (err) {
           debug("override errored", name);
           return cb(err);
         }
       } else {
-        this.server = server2;
+        this.server = server;
       }
       this.opts = typeof this.opts === "function" ? this.opts(this.server) : this.opts;
       debug("exec", name);
@@ -1375,49 +1375,49 @@ var require_boot = __commonJS({
     var debug = require_src()("avvio");
     var kAvvio = Symbol("kAvvio");
     var kThenifyDoNotWrap = Symbol("kThenifyDoNotWrap");
-    function wrap(server2, opts, instance) {
+    function wrap(server, opts, instance) {
       const expose = opts.expose || {};
       const useKey = expose.use || "use";
       const afterKey = expose.after || "after";
       const readyKey = expose.ready || "ready";
       const onCloseKey = expose.onClose || "onClose";
       const closeKey = expose.close || "close";
-      if (server2[useKey]) {
+      if (server[useKey]) {
         throw new AVV_ERR_EXPOSE_ALREADY_DEFINED(useKey);
       }
-      if (server2[afterKey]) {
+      if (server[afterKey]) {
         throw new AVV_ERR_EXPOSE_ALREADY_DEFINED(afterKey);
       }
-      if (server2[readyKey]) {
+      if (server[readyKey]) {
         throw new AVV_ERR_EXPOSE_ALREADY_DEFINED(readyKey);
       }
-      server2[useKey] = function(fn, opts2) {
+      server[useKey] = function(fn, opts2) {
         instance.use(fn, opts2);
         return this;
       };
-      Object.defineProperty(server2, "then", { get: thenify.bind(instance) });
-      server2[kAvvio] = true;
-      server2[afterKey] = function(func) {
+      Object.defineProperty(server, "then", { get: thenify.bind(instance) });
+      server[kAvvio] = true;
+      server[afterKey] = function(func) {
         if (typeof func !== "function") {
           return instance._loadRegistered();
         }
         instance.after(encapsulateThreeParam(func, this));
         return this;
       };
-      server2[readyKey] = function(func) {
+      server[readyKey] = function(func) {
         if (func && typeof func !== "function") {
           throw new AVV_ERR_CALLBACK_NOT_FN(readyKey, typeof func);
         }
         return instance.ready(func ? encapsulateThreeParam(func, this) : void 0);
       };
-      server2[onCloseKey] = function(func) {
+      server[onCloseKey] = function(func) {
         if (typeof func !== "function") {
           throw new AVV_ERR_CALLBACK_NOT_FN(onCloseKey, typeof func);
         }
         instance.onClose(encapsulateTwoParam(func, this));
         return this;
       };
-      server2[closeKey] = function(func) {
+      server[closeKey] = function(func) {
         if (func && typeof func !== "function") {
           throw new AVV_ERR_CALLBACK_NOT_FN(closeKey, typeof func);
         }
@@ -1428,11 +1428,11 @@ var require_boot = __commonJS({
         return instance.close();
       };
     }
-    function Boot(server2, opts, done) {
-      if (typeof server2 === "function" && arguments.length === 1) {
-        done = server2;
+    function Boot(server, opts, done) {
+      if (typeof server === "function" && arguments.length === 1) {
+        done = server;
         opts = {};
-        server2 = null;
+        server = null;
       }
       if (typeof opts === "function") {
         done = opts;
@@ -1440,18 +1440,18 @@ var require_boot = __commonJS({
       }
       opts = opts || {};
       if (!(this instanceof Boot)) {
-        const instance = new Boot(server2, opts, done);
-        if (server2) {
-          wrap(server2, opts, instance);
+        const instance = new Boot(server, opts, done);
+        if (server) {
+          wrap(server, opts, instance);
         }
         return instance;
       }
       if (opts.autostart !== false) {
         opts.autostart = true;
       }
-      server2 = server2 || this;
+      server = server || this;
       this._timeout = Number(opts.timeout) || 0;
-      this._server = server2;
+      this._server = server;
       this._current = [];
       this._error = null;
       this._isOnCloseHandlerKey = Symbol("isOnCloseHandler");
@@ -1514,8 +1514,8 @@ var require_boot = __commonJS({
       process.nextTick(this._doStart);
       return this;
     };
-    Boot.prototype.override = function(server2, func, opts) {
-      return server2;
+    Boot.prototype.override = function(server, func, opts) {
+      return server;
     };
     function assertPlugin(plugin) {
       if (plugin && typeof plugin === "object" && typeof plugin.default === "function") {
@@ -2433,8 +2433,8 @@ var require_errors2 = __commonJS({
 var require_server = __commonJS({
   "node_modules/fastify/lib/server.js"(exports, module2) {
     "use strict";
-    var http2 = require("http");
-    var https2 = require("https");
+    var http3 = require("http");
+    var https3 = require("https");
     var dns = require("dns");
     var warnings = require_warnings();
     var { kState, kOptions, kServerBindings } = require_symbols();
@@ -2449,8 +2449,8 @@ var require_server = __commonJS({
       return `Server listening at ${address}`;
     }
     function createServer(options, httpHandler) {
-      const server2 = getServerInstance(options, httpHandler);
-      return { server: server2, listen };
+      const server = getServerInstance(options, httpHandler);
+      return { server, listen };
       function listen(listenOptions, ...args) {
         let cb = args.slice(-1).pop();
         const firstArgType = Object.prototype.toString.call(arguments[0]);
@@ -2482,18 +2482,18 @@ var require_server = __commonJS({
               cb(err, address);
               return;
             }
-            multipleBindings.call(this, server2, httpHandler, options, listenOptions, () => {
+            multipleBindings.call(this, server, httpHandler, options, listenOptions, () => {
               this[kState].listening = true;
               cb(null, address);
             });
           };
         }
         if (cb === void 0) {
-          const listening = listenPromise.call(this, server2, listenOptions);
+          const listening = listenPromise.call(this, server, listenOptions);
           if (host === "localhost") {
             return listening.then((address) => {
               return new Promise((resolve, reject) => {
-                multipleBindings.call(this, server2, httpHandler, options, listenOptions, () => {
+                multipleBindings.call(this, server, httpHandler, options, listenOptions, () => {
                   this[kState].listening = true;
                   resolve(address);
                 });
@@ -2502,7 +2502,7 @@ var require_server = __commonJS({
           }
           return listening;
         }
-        this.ready(listenCallback.call(this, server2, listenOptions));
+        this.ready(listenCallback.call(this, server, listenOptions));
       }
     }
     function multipleBindings(mainServer, httpHandler, serverOpts, listenOptions, onListen) {
@@ -2555,11 +2555,11 @@ var require_server = __commonJS({
         };
       });
     }
-    function listenCallback(server2, listenOptions) {
+    function listenCallback(server, listenOptions) {
       const wrap = (err) => {
-        server2.removeListener("error", wrap);
+        server.removeListener("error", wrap);
         if (!err) {
-          const address = logServerAddress.call(this, server2, listenOptions.listenTextResolver || defaultResolveServerListeningText);
+          const address = logServerAddress.call(this, server, listenOptions.listenTextResolver || defaultResolveServerListeningText);
           listenOptions.cb(null, address);
         } else {
           this[kState].listening = false;
@@ -2574,12 +2574,12 @@ var require_server = __commonJS({
         } else if (this[kState].listening) {
           return listenOptions.cb(new FST_ERR_REOPENED_SERVER(), null);
         }
-        server2.once("error", wrap);
-        server2.listen(listenOptions, wrap);
+        server.once("error", wrap);
+        server.listen(listenOptions, wrap);
         this[kState].listening = true;
       };
     }
-    function listenPromise(server2, listenOptions) {
+    function listenPromise(server, listenOptions) {
       if (this[kState].listening && this[kState].closing) {
         return Promise.reject(new FST_ERR_REOPENED_CLOSE_SERVER());
       } else if (this[kState].listening) {
@@ -2592,12 +2592,12 @@ var require_server = __commonJS({
             this[kState].listening = false;
             reject(err);
           };
-          server2.once("error", errEventHandler);
+          server.once("error", errEventHandler);
         });
         const listen = new Promise((resolve, reject) => {
-          server2.listen(listenOptions, () => {
-            server2.removeListener("error", errEventHandler);
-            resolve(logServerAddress.call(this, server2, listenOptions.listenTextResolver || defaultResolveServerListeningText));
+          server.listen(listenOptions, () => {
+            server.removeListener("error", errEventHandler);
+            resolve(logServerAddress.call(this, server, listenOptions.listenTextResolver || defaultResolveServerListeningText));
           });
           this[kState].listening = true;
         });
@@ -2629,33 +2629,33 @@ var require_server = __commonJS({
       };
     }
     function getServerInstance(options, httpHandler) {
-      let server2 = null;
+      let server = null;
       const httpsOptions = options.https === true ? {} : options.https;
       if (options.serverFactory) {
-        server2 = options.serverFactory(httpHandler, options);
+        server = options.serverFactory(httpHandler, options);
       } else if (options.http2) {
         if (typeof httpsOptions === "object") {
-          server2 = http22().createSecureServer(httpsOptions, httpHandler);
+          server = http22().createSecureServer(httpsOptions, httpHandler);
         } else {
-          server2 = http22().createServer(httpHandler);
+          server = http22().createServer(httpHandler);
         }
-        server2.on("session", sessionTimeout(options.http2SessionTimeout));
+        server.on("session", sessionTimeout(options.http2SessionTimeout));
       } else {
         if (httpsOptions) {
-          server2 = https2.createServer(httpsOptions, httpHandler);
+          server = https3.createServer(httpsOptions, httpHandler);
         } else {
-          server2 = http2.createServer(options.http, httpHandler);
+          server = http3.createServer(options.http, httpHandler);
         }
-        server2.keepAliveTimeout = options.keepAliveTimeout;
-        server2.requestTimeout = options.requestTimeout;
+        server.keepAliveTimeout = options.keepAliveTimeout;
+        server.requestTimeout = options.requestTimeout;
         if (options.maxRequestsPerSocket > 0) {
-          server2.maxRequestsPerSocket = options.maxRequestsPerSocket;
+          server.maxRequestsPerSocket = options.maxRequestsPerSocket;
         }
       }
       if (!options.serverFactory) {
-        server2.setTimeout(options.connectionTimeout);
+        server.setTimeout(options.connectionTimeout);
       }
-      return server2;
+      return server;
     }
     function normalizeListenArgs(args) {
       if (args.length === 0) {
@@ -2680,8 +2680,8 @@ var require_server = __commonJS({
       const port = Number(firstArg);
       return port >= 0 && !Number.isNaN(port) && Number.isInteger(port) ? port : 0;
     }
-    function logServerAddress(server2, listenTextResolver) {
-      let address = server2.address();
+    function logServerAddress(server, listenTextResolver) {
+      let address = server.address();
       const isUnixSocket = typeof address === "string";
       if (!isUnixSocket) {
         if (address.address.indexOf(":") === -1) {
@@ -2797,8 +2797,8 @@ var require_hooks = __commonJS({
       hooks.preClose = [];
       return hooks;
     }
-    function hookRunnerApplication(hookName, boot, server2, cb) {
-      const hooks = server2[kHooks][hookName];
+    function hookRunnerApplication(hookName, boot, server, cb) {
+      const hooks = server[kHooks][hookName];
       let i = 0;
       let c = 0;
       next();
@@ -2819,7 +2819,7 @@ var require_hooks = __commonJS({
           exit(err);
           return;
         }
-        if (i === hooks.length && c === server2[kChildren].length) {
+        if (i === hooks.length && c === server[kChildren].length) {
           if (i === 0 && c === 0) {
             exit();
           } else {
@@ -2830,15 +2830,15 @@ var require_hooks = __commonJS({
           }
           return;
         }
-        if (i === hooks.length && c < server2[kChildren].length) {
-          const child = server2[kChildren][c++];
+        if (i === hooks.length && c < server[kChildren].length) {
+          const child = server[kChildren][c++];
           hookRunnerApplication(hookName, boot, child, next);
           return;
         }
-        boot(wrap(hooks[i++], server2));
+        boot(wrap(hooks[i++], server));
         next();
       }
-      function wrap(fn, server3) {
+      function wrap(fn, server2) {
         return function(err, done) {
           if (err) {
             done(err);
@@ -2846,14 +2846,14 @@ var require_hooks = __commonJS({
           }
           if (fn.length === 1) {
             try {
-              fn.call(server3, done);
+              fn.call(server2, done);
             } catch (error) {
               done(error);
             }
             return;
           }
           try {
-            const ret = fn.call(server3);
+            const ret = fn.call(server2);
             if (ret && typeof ret.then === "function") {
               ret.then(done, done);
               return;
@@ -4646,7 +4646,7 @@ var require_atomic_sleep = __commonJS({
 var require_sonic_boom = __commonJS({
   "node_modules/sonic-boom/index.js"(exports, module2) {
     "use strict";
-    var fs2 = require("fs");
+    var fs3 = require("fs");
     var EventEmitter2 = require("events");
     var inherits = require("util").inherits;
     var path = require("path");
@@ -4695,21 +4695,21 @@ var require_sonic_boom = __commonJS({
       if (sonic.sync) {
         try {
           if (sonic.mkdir)
-            fs2.mkdirSync(path.dirname(file), { recursive: true });
-          const fd = fs2.openSync(file, flags, mode);
+            fs3.mkdirSync(path.dirname(file), { recursive: true });
+          const fd = fs3.openSync(file, flags, mode);
           fileOpened(null, fd);
         } catch (err) {
           fileOpened(err);
           throw err;
         }
       } else if (sonic.mkdir) {
-        fs2.mkdir(path.dirname(file), { recursive: true }, (err) => {
+        fs3.mkdir(path.dirname(file), { recursive: true }, (err) => {
           if (err)
             return fileOpened(err);
-          fs2.open(file, flags, mode, fileOpened);
+          fs3.open(file, flags, mode, fileOpened);
         });
       } else {
-        fs2.open(file, flags, mode, fileOpened);
+        fs3.open(file, flags, mode, fileOpened);
       }
     }
     function SonicBoom(opts) {
@@ -4761,7 +4761,7 @@ var require_sonic_boom = __commonJS({
               }
             } else {
               setTimeout(() => {
-                fs2.write(this.fd, this._writingBuf, "utf8", this.release);
+                fs3.write(this.fd, this._writingBuf, "utf8", this.release);
               }, BUSY_WRITE_TIMEOUT);
             }
           } else {
@@ -4778,12 +4778,12 @@ var require_sonic_boom = __commonJS({
         this._writingBuf = this._writingBuf.slice(n);
         if (this._writingBuf.length) {
           if (!this.sync) {
-            fs2.write(this.fd, this._writingBuf, "utf8", this.release);
+            fs3.write(this.fd, this._writingBuf, "utf8", this.release);
             return;
           }
           try {
             do {
-              const n2 = fs2.writeSync(this.fd, this._writingBuf, "utf8");
+              const n2 = fs3.writeSync(this.fd, this._writingBuf, "utf8");
               this._len -= n2;
               this._writingBuf = this._writingBuf.slice(n2);
             } while (this._writingBuf);
@@ -4793,7 +4793,7 @@ var require_sonic_boom = __commonJS({
           }
         }
         if (this._fsync) {
-          fs2.fsyncSync(this.fd);
+          fs3.fsyncSync(this.fd);
         }
         const len = this._len;
         if (this._reopening) {
@@ -4891,7 +4891,7 @@ var require_sonic_boom = __commonJS({
       const fd = this.fd;
       this.once("ready", () => {
         if (fd !== this.fd) {
-          fs2.close(fd, (err) => {
+          fs3.close(fd, (err) => {
             if (err) {
               return this.emit("error", err);
             }
@@ -4940,7 +4940,7 @@ var require_sonic_boom = __commonJS({
           buf = this._bufs[0];
         }
         try {
-          const n = fs2.writeSync(this.fd, buf, "utf8");
+          const n = fs3.writeSync(this.fd, buf, "utf8");
           buf = buf.slice(n);
           this._len = Math.max(this._len - n, 0);
           if (buf.length <= 0) {
@@ -4967,13 +4967,13 @@ var require_sonic_boom = __commonJS({
       sonic._writingBuf = sonic._writingBuf || sonic._bufs.shift() || "";
       if (sonic.sync) {
         try {
-          const written = fs2.writeSync(sonic.fd, sonic._writingBuf, "utf8");
+          const written = fs3.writeSync(sonic.fd, sonic._writingBuf, "utf8");
           release(null, written);
         } catch (err) {
           release(err);
         }
       } else {
-        fs2.write(sonic.fd, sonic._writingBuf, "utf8", release);
+        fs3.write(sonic.fd, sonic._writingBuf, "utf8", release);
       }
     }
     function actualClose(sonic) {
@@ -4984,7 +4984,7 @@ var require_sonic_boom = __commonJS({
       sonic.destroyed = true;
       sonic._bufs = [];
       if (sonic.fd !== 1 && sonic.fd !== 2) {
-        fs2.close(sonic.fd, done);
+        fs3.close(sonic.fd, done);
       } else {
         setImmediate(done);
       }
@@ -15169,15 +15169,15 @@ var require_schemes = __commonJS({
       urnComponents.nss = (uuidComponents.uuid || "").toLowerCase();
       return urnComponents;
     }
-    var http2 = {
+    var http3 = {
       scheme: "http",
       domainHost: true,
       parse: httpParse,
       serialize: httpSerialize
     };
-    var https2 = {
+    var https3 = {
       scheme: "https",
-      domainHost: http2.domainHost,
+      domainHost: http3.domainHost,
       parse: httpParse,
       serialize: httpSerialize
     };
@@ -15206,8 +15206,8 @@ var require_schemes = __commonJS({
       skipNormalize: true
     };
     var SCHEMES = {
-      http: http2,
-      https: https2,
+      http: http3,
+      https: https3,
       ws,
       wss,
       urn,
@@ -15735,12 +15735,12 @@ var require_dist = __commonJS({
         throw new Error(`Unknown format "${name}"`);
       return f;
     };
-    function addFormats(ajv, list, fs2, exportName) {
+    function addFormats(ajv, list, fs3, exportName) {
       var _a;
       var _b;
       (_a = (_b = ajv.opts.code).formats) !== null && _a !== void 0 ? _a : _b.formats = codegen_1._`require("ajv-formats/dist/formats").${exportName}`;
       for (const f of list)
-        ajv.addFormat(f, fs2[f]);
+        ajv.addFormat(f, fs3[f]);
     }
     module2.exports = exports = formatsPlugin;
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -28068,14 +28068,14 @@ var require_context = __commonJS({
       schemaErrorFormatter,
       exposeHeadRoute,
       prefixTrailingSlash,
-      server: server2,
+      server,
       isFastify
     }) {
       this.schema = schema;
       this.handler = handler;
-      this.Reply = server2[kReply];
-      this.Request = server2[kRequest];
-      this.contentTypeParser = server2[kContentTypeParser];
+      this.Reply = server[kReply];
+      this.Request = server[kRequest];
+      this.contentTypeParser = server[kContentTypeParser];
       this.onRequest = null;
       this.onSend = null;
       this.onError = null;
@@ -28085,26 +28085,26 @@ var require_context = __commonJS({
       this.preSerialization = null;
       this.onRequestAbort = null;
       this.config = config;
-      this.errorHandler = errorHandler || server2[kErrorHandler];
+      this.errorHandler = errorHandler || server[kErrorHandler];
       this._middie = null;
       this._parserOptions = {
-        limit: bodyLimit || server2[kBodyLimit]
+        limit: bodyLimit || server[kBodyLimit]
       };
       this.exposeHeadRoute = exposeHeadRoute;
       this.prefixTrailingSlash = prefixTrailingSlash;
-      this.logLevel = logLevel || server2[kLogLevel];
+      this.logLevel = logLevel || server[kLogLevel];
       this.logSerializers = logSerializers;
       this[kFourOhFourContext] = null;
       this.attachValidation = attachValidation;
       this[kReplySerializerDefault] = replySerializer;
-      this.schemaErrorFormatter = schemaErrorFormatter || server2[kSchemaErrorFormatter] || defaultSchemaErrorFormatter;
+      this.schemaErrorFormatter = schemaErrorFormatter || server[kSchemaErrorFormatter] || defaultSchemaErrorFormatter;
       this[kRouteByFastify] = isFastify;
       this[kRequestCacheValidateFns] = null;
       this[kReplyCacheSerializeFns] = null;
       this.validatorCompiler = validatorCompiler || null;
       this.serializerCompiler = serializerCompiler || null;
       this[kPublicRouteContext] = getPublicRouteContext(this);
-      this.server = server2;
+      this.server = server;
     }
     function getPublicRouteContext(context) {
       return Object.create(null, {
@@ -30487,12 +30487,12 @@ var require_set_cookie = __commonJS({
 var require_response = __commonJS({
   "node_modules/light-my-request/lib/response.js"(exports, module2) {
     "use strict";
-    var http2 = require("http");
+    var http3 = require("http");
     var { Writable } = require("stream");
     var util = require("util");
     var setCookie = require_set_cookie();
     function Response(req, onEnd, reject) {
-      http2.ServerResponse.call(this, req);
+      http3.ServerResponse.call(this, req);
       this._lightMyRequest = { headers: null, trailers: {}, payloadChunks: [] };
       this.setHeader("foo", "bar");
       this.removeHeader("foo");
@@ -30524,7 +30524,7 @@ var require_response = __commonJS({
       this.once("error", onEndFailure);
       this.once("close", onEndFailure);
     }
-    util.inherits(Response, http2.ServerResponse);
+    util.inherits(Response, http3.ServerResponse);
     Response.prototype.setTimeout = function(msecs, callback) {
       this.timeoutHandle = setTimeout(() => {
         this.emit("timeout");
@@ -30533,7 +30533,7 @@ var require_response = __commonJS({
       return this;
     };
     Response.prototype.writeHead = function() {
-      const result = http2.ServerResponse.prototype.writeHead.apply(this, arguments);
+      const result = http3.ServerResponse.prototype.writeHead.apply(this, arguments);
       copyHeaders(this);
       return result;
     };
@@ -30541,7 +30541,7 @@ var require_response = __commonJS({
       if (this.timeoutHandle) {
         clearTimeout(this.timeoutHandle);
       }
-      http2.ServerResponse.prototype.write.call(this, data, encoding, callback);
+      http3.ServerResponse.prototype.write.call(this, data, encoding, callback);
       this._lightMyRequest.payloadChunks.push(Buffer.from(data, encoding));
       return true;
     };
@@ -30549,7 +30549,7 @@ var require_response = __commonJS({
       if (data) {
         this.write(data, encoding);
       }
-      http2.ServerResponse.prototype.end.call(this, callback);
+      http3.ServerResponse.prototype.end.call(this, callback);
       this.emit("finish");
       this.destroy();
     };
@@ -31471,7 +31471,7 @@ var require_light_my_request = __commonJS({
         return doInject(dispatchFunc, options, callback);
       }
     }
-    function makeRequest(dispatchFunc, server2, req, res) {
+    function makeRequest(dispatchFunc, server, req, res) {
       req.once("error", function(err) {
         if (this.destroyed)
           res.destroy(err);
@@ -31480,7 +31480,7 @@ var require_light_my_request = __commonJS({
         if (this.destroyed && !this._error)
           res.destroy();
       });
-      return req.prepare(() => dispatchFunc.call(server2, req, res));
+      return req.prepare(() => dispatchFunc.call(server, req, res));
     }
     function doInject(dispatchFunc, options, callback) {
       options = typeof options === "string" ? { url: options } : options;
@@ -31491,7 +31491,7 @@ var require_light_my_request = __commonJS({
           throw new Error(optsValidator.errors.map((e) => e.message));
         }
       }
-      const server2 = options.server || {};
+      const server = options.server || {};
       const RequestConstructor = options.Request ? Request.CustomRequest : Request;
       if (dispatchFunc.request && dispatchFunc.request.app === dispatchFunc) {
         Object.setPrototypeOf(Object.getPrototypeOf(dispatchFunc.request), RequestConstructor.prototype);
@@ -31500,12 +31500,12 @@ var require_light_my_request = __commonJS({
       if (typeof callback === "function") {
         const req = new RequestConstructor(options);
         const res = new Response(req, callback);
-        return makeRequest(dispatchFunc, server2, req, res);
+        return makeRequest(dispatchFunc, server, req, res);
       } else {
         return new Promise((resolve, reject) => {
           const req = new RequestConstructor(options);
           const res = new Response(req, resolve, reject);
-          makeRequest(dispatchFunc, server2, req, res);
+          makeRequest(dispatchFunc, server, req, res);
         });
       }
     }
@@ -31604,7 +31604,7 @@ var require_fastify = __commonJS({
     "use strict";
     var VERSION = "4.18.0";
     var Avvio = require_boot();
-    var http2 = require("http");
+    var http3 = require("http");
     var lightMyRequest;
     var {
       kAvvioBoot,
@@ -31760,9 +31760,9 @@ var require_fastify = __commonJS({
       const fourOhFour = build404(options);
       const httpHandler = wrapRouting(router, options);
       options.http2SessionTimeout = initialConfig.http2SessionTimeout;
-      const { server: server2, listen } = createServer(options, httpHandler);
-      const serverHasCloseAllConnections = typeof server2.closeAllConnections === "function";
-      const serverHasCloseIdleConnections = typeof server2.closeIdleConnections === "function";
+      const { server, listen } = createServer(options, httpHandler);
+      const serverHasCloseAllConnections = typeof server.closeAllConnections === "function";
+      const serverHasCloseIdleConnections = typeof server.closeIdleConnections === "function";
       let forceCloseConnections = options.forceCloseConnections;
       if (forceCloseConnections === "idle" && !serverHasCloseIdleConnections) {
         throw new FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE();
@@ -31873,7 +31873,7 @@ var require_fastify = __commonJS({
         },
         // http server
         listen,
-        server: server2,
+        server,
         addresses: function() {
           const binded = this[kServerBindings].map((b) => b.address());
           binded.push(this.server.address());
@@ -32001,7 +32001,7 @@ var require_fastify = __commonJS({
         validateHTTPVersion: compileValidateHTTPVersion(options),
         keepAliveConnections
       });
-      server2.on("clientError", options.clientErrorHandler.bind(fastify2));
+      server.on("clientError", options.clientErrorHandler.bind(fastify2));
       try {
         const dc = require("diagnostics_channel");
         const initChannel = dc.channel("fastify.initialization");
@@ -32142,12 +32142,12 @@ var require_fastify = __commonJS({
         let body, errorCode, errorStatus, errorLabel;
         if (err.code === "ERR_HTTP_REQUEST_TIMEOUT") {
           errorCode = "408";
-          errorStatus = http2.STATUS_CODES[errorCode];
+          errorStatus = http3.STATUS_CODES[errorCode];
           body = `{"error":"${errorStatus}","message":"Client Timeout","statusCode":408}`;
           errorLabel = "timeout";
         } else {
           errorCode = "400";
-          errorStatus = http2.STATUS_CODES[errorCode];
+          errorStatus = http3.STATUS_CODES[errorCode];
           body = `{"error":"${errorStatus}","message":"Client Error","statusCode":400}`;
           errorLabel = "error";
         }
@@ -48462,7 +48462,7 @@ var require_package2 = __commonJS({
 // node_modules/dotenv/lib/main.js
 var require_main = __commonJS({
   "node_modules/dotenv/lib/main.js"(exports, module2) {
-    var fs2 = require("fs");
+    var fs3 = require("fs");
     var path = require("path");
     var os = require("os");
     var crypto5 = require("crypto");
@@ -48587,7 +48587,7 @@ var require_main = __commonJS({
         }
       }
       try {
-        const parsed = DotenvModule.parse(fs2.readFileSync(dotenvPath, { encoding }));
+        const parsed = DotenvModule.parse(fs3.readFileSync(dotenvPath, { encoding }));
         let processEnv = process.env;
         if (options && options.processEnv != null) {
           processEnv = options.processEnv;
@@ -48606,7 +48606,7 @@ var require_main = __commonJS({
       if (_dotenvKey(options).length === 0) {
         return DotenvModule.configDotenv(options);
       }
-      if (!fs2.existsSync(vaultPath)) {
+      if (!fs3.existsSync(vaultPath)) {
         _warn(`You set DOTENV_KEY but you are missing a .env.vault file at ${vaultPath}. Did you forget to build it?`);
         return DotenvModule.configDotenv(options);
       }
@@ -54747,14 +54747,14 @@ var Stripe = createStripe(new NodePlatformFunctions());
 var stripe_esm_node_default = Stripe;
 
 // back/routes.js
-async function routes(server2, options) {
-  server2.get("/", (request, reply) => {
+async function routes(server, options) {
+  server.get("/", (request, reply) => {
     const html = import_fs.default.readFileSync("front/views/create.html");
     reply.header("Content-Type", "text/html").send(html);
   });
-  server2.get("/:hash", (request, reply) => {
+  server.get("/:hash", (request, reply) => {
     const { first_sight } = request.query;
-    server2.mysql.query(
+    server.mysql.query(
       "SELECT * FROM seeds WHERE hash = ?",
       [request.params.hash],
       (err, result) => {
@@ -54773,7 +54773,7 @@ async function routes(server2, options) {
       }
     );
   });
-  server2.post("/checkout", async (request, reply) => {
+  server.post("/checkout", async (request, reply) => {
     const stripe = new stripe_esm_node_default(process.env.STRIPE_API_KEY);
     const { name, date } = request.body;
     const session = await stripe.checkout.sessions.create({
@@ -54790,13 +54790,13 @@ async function routes(server2, options) {
     });
     reply.redirect(303, session.url);
   });
-  server2.get("/checkout-success", (request, reply) => {
+  server.get("/checkout-success", (request, reply) => {
     const { name, date } = request.query;
     try {
       const toHash = name + date;
       const hash = import_crypto.default.createHash("md5").update(toHash).digest("hex");
       const datetime = new Date(date).toISOString().slice(0, 19).replace("T", " ");
-      server2.mysql.query(
+      server.mysql.query(
         "INSERT INTO seeds ( name, planted, hash ) VALUES (?, ?, ?)",
         [name, datetime, hash],
         (err, result) => {
@@ -54814,7 +54814,17 @@ async function routes(server2, options) {
 }
 
 // back/index.js
-var server = new import_fastify.default({ logger: true });
+var import_fs2 = __toESM(require("fs"));
+var http2 = new import_fastify.default({
+  logger: true
+});
+var https2 = new import_fastify.default({
+  logger: true,
+  https: {
+    key: import_fs2.default.readFileSync("/etc/letsencrypt/live/mon-arbre-unique.com/privkey.pem"),
+    cert: import_fs2.default.readFileSync("/etc/letsencrypt/live/mon-arbre-unique.com/fullchain.pem")
+  }
+});
 var env = {
   schema: {
     type: "object",
@@ -54822,22 +54832,22 @@ var env = {
     properties: {
       PORT: {
         type: "string",
-        default: process.env.PORT || 3e3
+        default: process.env.PORT || 80
       }
     }
   },
   dotenv: true
 };
 var start = async () => {
-  await server.register(import_env.default, env);
-  server.register(import_mysql.default, {
+  await https2.register(import_env.default, env);
+  https2.register(import_mysql.default, {
     connectionString: process.env.DB_URL
   });
-  server.register(import_formbody.default);
-  server.register(routes);
-  server.listen({ port: process.env.PORT, host: "0.0.0.0" }, (err, address) => {
+  https2.register(import_formbody.default);
+  https2.register(routes);
+  https2.listen({ port: process.env.PORT, host: "0.0.0.0" }, (err, address) => {
     if (err) {
-      server.log.error(err);
+      https2.log.error(err);
     }
   });
 };
