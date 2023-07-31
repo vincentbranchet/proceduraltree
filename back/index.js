@@ -13,8 +13,8 @@ const http = new Fastify({
 const https = new Fastify({ 
     logger: true,
     https: {
-        key: fs.readFileSync('/etc/letsencrypt/live/mon-arbre-unique.com/privkey.pem'),
-        cert: fs.readFileSync('/etc/letsencrypt/live/mon-arbre-unique.com/fullchain.pem')
+        key: fs.readFileSync('/etc/letsencrypt/live/monarbrevirtuel.com/privkey.pem'),
+        cert: fs.readFileSync('/etc/letsencrypt/live/monarbrevirtuel.com/fullchain.pem')
     }
 })
 
