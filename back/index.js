@@ -4,9 +4,8 @@ import fastifyEnv from "@fastify/env"
 import fastifyFormbody from "@fastify/formbody"
 import routes from "./routes.js"
 import fs from "fs"
-import { browser } from "./puppeteer.js"
 
-const http = new Fastify({
+const http = new Fastify({ 
     logger: true,
 })
 
@@ -33,7 +32,6 @@ const env = {
 }
 
 const start = async () => {
-    await browser.launch()
     await https.register(fastifyEnv, env)
 
     https.register(fastifyMysql, {

@@ -1,7 +1,6 @@
 import crypto from "crypto"
 import fs from "fs"
 import Stripe from 'stripe'
-import { browser } from "./puppeteer.js"
 
 export default async function routes(server, options) {
     // INDEX
@@ -17,37 +16,23 @@ export default async function routes(server, options) {
         server.mysql.query(
             'SELECT * FROM seeds WHERE hash = ?',
             [request.params.hash],
-            async (err, result) => {
-                if(result.length === 1) {
+            (err, result) => {
+                if (result.length === 1) {
                     try {
                         const js = fs.readFileSync(process.env.FRONT_JS)
+                        const html = fs.readFileSync('front/views/index.html')
                         const config = fs.readFileSync(process.env.BACK_CONFIG)
-                        const html = fs.readFileSync("front/views/show.html")
-                
+
                         const clientJs = js.toString().replace('PLACEHOLDER_NAME', result[0].name).replace('PLACEHOLDER_BIRTHDAY', result[0].planted).replace('\"PLACEHOLDER_CONFIG\"', config)
-                                            
-                        const buffer = await browser.draw(clientJs)
-                        const location = `public/${request.params.hash}.png`
-
-                        fs.writeFileSync(location, buffer)
-
-                        const clientHtml = html.toString().replace('PLACEHOLDER_TREE_NAME', result[0].name).replace('PLACEHOLDER_TREE_LINK', `http://${process.env.HOST_NAME}/${location}`)
+                        const clientHtml = html.toString().replace('PLACEHOLDER_APP_CODE', clientJs).replace('PLACEHOLDER_TREE_NAME', result[0].name)
 
                         reply.header('Content-Type', 'text/html').send(clientHtml)
-                    } catch(err) {
+                    } catch (err) {
                         reply.send(err)
                     }
-                } else reply.send(err)
+                }
             }
         )
-    })
-
-    // SERVE RENDERED TREE FILES
-    server.get('/public/:img', async(request, reply) => {
-        if(fs.existsSync(`public/${request.params.img}`)) {
-            const buffer = fs.readFileSync(`public/${request.params.img}`)
-            reply.header('content-type', 'image/png').send(buffer)
-        } else reply.send('Image file not found')
     })
 
     // CHECKOUT - Process
