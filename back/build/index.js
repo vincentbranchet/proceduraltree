@@ -2434,7 +2434,7 @@ var require_server = __commonJS({
   "node_modules/fastify/lib/server.js"(exports, module2) {
     "use strict";
     var http3 = require("http");
-    var https3 = require("https");
+    var https2 = require("https");
     var dns = require("dns");
     var warnings = require_warnings();
     var { kState, kOptions, kServerBindings } = require_symbols();
@@ -2642,7 +2642,7 @@ var require_server = __commonJS({
         server.on("session", sessionTimeout(options.http2SessionTimeout));
       } else {
         if (httpsOptions) {
-          server = https3.createServer(httpsOptions, httpHandler);
+          server = https2.createServer(httpsOptions, httpHandler);
         } else {
           server = http3.createServer(options.http, httpHandler);
         }
@@ -4646,7 +4646,7 @@ var require_atomic_sleep = __commonJS({
 var require_sonic_boom = __commonJS({
   "node_modules/sonic-boom/index.js"(exports, module2) {
     "use strict";
-    var fs3 = require("fs");
+    var fs2 = require("fs");
     var EventEmitter2 = require("events");
     var inherits = require("util").inherits;
     var path = require("path");
@@ -4695,21 +4695,21 @@ var require_sonic_boom = __commonJS({
       if (sonic.sync) {
         try {
           if (sonic.mkdir)
-            fs3.mkdirSync(path.dirname(file), { recursive: true });
-          const fd = fs3.openSync(file, flags, mode);
+            fs2.mkdirSync(path.dirname(file), { recursive: true });
+          const fd = fs2.openSync(file, flags, mode);
           fileOpened(null, fd);
         } catch (err) {
           fileOpened(err);
           throw err;
         }
       } else if (sonic.mkdir) {
-        fs3.mkdir(path.dirname(file), { recursive: true }, (err) => {
+        fs2.mkdir(path.dirname(file), { recursive: true }, (err) => {
           if (err)
             return fileOpened(err);
-          fs3.open(file, flags, mode, fileOpened);
+          fs2.open(file, flags, mode, fileOpened);
         });
       } else {
-        fs3.open(file, flags, mode, fileOpened);
+        fs2.open(file, flags, mode, fileOpened);
       }
     }
     function SonicBoom(opts) {
@@ -4761,7 +4761,7 @@ var require_sonic_boom = __commonJS({
               }
             } else {
               setTimeout(() => {
-                fs3.write(this.fd, this._writingBuf, "utf8", this.release);
+                fs2.write(this.fd, this._writingBuf, "utf8", this.release);
               }, BUSY_WRITE_TIMEOUT);
             }
           } else {
@@ -4778,12 +4778,12 @@ var require_sonic_boom = __commonJS({
         this._writingBuf = this._writingBuf.slice(n);
         if (this._writingBuf.length) {
           if (!this.sync) {
-            fs3.write(this.fd, this._writingBuf, "utf8", this.release);
+            fs2.write(this.fd, this._writingBuf, "utf8", this.release);
             return;
           }
           try {
             do {
-              const n2 = fs3.writeSync(this.fd, this._writingBuf, "utf8");
+              const n2 = fs2.writeSync(this.fd, this._writingBuf, "utf8");
               this._len -= n2;
               this._writingBuf = this._writingBuf.slice(n2);
             } while (this._writingBuf);
@@ -4793,7 +4793,7 @@ var require_sonic_boom = __commonJS({
           }
         }
         if (this._fsync) {
-          fs3.fsyncSync(this.fd);
+          fs2.fsyncSync(this.fd);
         }
         const len = this._len;
         if (this._reopening) {
@@ -4891,7 +4891,7 @@ var require_sonic_boom = __commonJS({
       const fd = this.fd;
       this.once("ready", () => {
         if (fd !== this.fd) {
-          fs3.close(fd, (err) => {
+          fs2.close(fd, (err) => {
             if (err) {
               return this.emit("error", err);
             }
@@ -4940,7 +4940,7 @@ var require_sonic_boom = __commonJS({
           buf = this._bufs[0];
         }
         try {
-          const n = fs3.writeSync(this.fd, buf, "utf8");
+          const n = fs2.writeSync(this.fd, buf, "utf8");
           buf = buf.slice(n);
           this._len = Math.max(this._len - n, 0);
           if (buf.length <= 0) {
@@ -4967,13 +4967,13 @@ var require_sonic_boom = __commonJS({
       sonic._writingBuf = sonic._writingBuf || sonic._bufs.shift() || "";
       if (sonic.sync) {
         try {
-          const written = fs3.writeSync(sonic.fd, sonic._writingBuf, "utf8");
+          const written = fs2.writeSync(sonic.fd, sonic._writingBuf, "utf8");
           release(null, written);
         } catch (err) {
           release(err);
         }
       } else {
-        fs3.write(sonic.fd, sonic._writingBuf, "utf8", release);
+        fs2.write(sonic.fd, sonic._writingBuf, "utf8", release);
       }
     }
     function actualClose(sonic) {
@@ -4984,7 +4984,7 @@ var require_sonic_boom = __commonJS({
       sonic.destroyed = true;
       sonic._bufs = [];
       if (sonic.fd !== 1 && sonic.fd !== 2) {
-        fs3.close(sonic.fd, done);
+        fs2.close(sonic.fd, done);
       } else {
         setImmediate(done);
       }
@@ -15175,7 +15175,7 @@ var require_schemes = __commonJS({
       parse: httpParse,
       serialize: httpSerialize
     };
-    var https3 = {
+    var https2 = {
       scheme: "https",
       domainHost: http3.domainHost,
       parse: httpParse,
@@ -15207,7 +15207,7 @@ var require_schemes = __commonJS({
     };
     var SCHEMES = {
       http: http3,
-      https: https3,
+      https: https2,
       ws,
       wss,
       urn,
@@ -15735,12 +15735,12 @@ var require_dist = __commonJS({
         throw new Error(`Unknown format "${name}"`);
       return f;
     };
-    function addFormats(ajv, list, fs3, exportName) {
+    function addFormats(ajv, list, fs2, exportName) {
       var _a;
       var _b;
       (_a = (_b = ajv.opts.code).formats) !== null && _a !== void 0 ? _a : _b.formats = codegen_1._`require("ajv-formats/dist/formats").${exportName}`;
       for (const f of list)
-        ajv.addFormat(f, fs3[f]);
+        ajv.addFormat(f, fs2[f]);
     }
     module2.exports = exports = formatsPlugin;
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -48462,7 +48462,7 @@ var require_package2 = __commonJS({
 // node_modules/dotenv/lib/main.js
 var require_main = __commonJS({
   "node_modules/dotenv/lib/main.js"(exports, module2) {
-    var fs3 = require("fs");
+    var fs2 = require("fs");
     var path = require("path");
     var os = require("os");
     var crypto5 = require("crypto");
@@ -48587,7 +48587,7 @@ var require_main = __commonJS({
         }
       }
       try {
-        const parsed = DotenvModule.parse(fs3.readFileSync(dotenvPath, { encoding }));
+        const parsed = DotenvModule.parse(fs2.readFileSync(dotenvPath, { encoding }));
         let processEnv = process.env;
         if (options && options.processEnv != null) {
           processEnv = options.processEnv;
@@ -48606,7 +48606,7 @@ var require_main = __commonJS({
       if (_dotenvKey(options).length === 0) {
         return DotenvModule.configDotenv(options);
       }
-      if (!fs3.existsSync(vaultPath)) {
+      if (!fs2.existsSync(vaultPath)) {
         _warn(`You set DOTENV_KEY but you are missing a .env.vault file at ${vaultPath}. Did you forget to build it?`);
         return DotenvModule.configDotenv(options);
       }
@@ -54814,16 +54814,8 @@ async function routes(server, options) {
 }
 
 // back/index.js
-var import_fs2 = __toESM(require("fs"));
 var http2 = new import_fastify.default({
   logger: true
-});
-var https2 = new import_fastify.default({
-  logger: true,
-  https: {
-    key: import_fs14.default.readFileSync("/etc/letsencrypt/live/monarbrevirtuel.com/privkey.pem"),
-    cert: import_fs14.default.readFileSync("/etc/letsencrypt/live/monarbrevirtuel.com/fullchain.pem")
-  }
 });
 var env = {
   schema: {
@@ -54839,15 +54831,16 @@ var env = {
   dotenv: true
 };
 var start = async () => {
-  await https2.register(import_env.default, env);
-  https2.register(import_mysql.default, {
+  const server = http2;
+  await server.register(import_env.default, env);
+  server.register(import_mysql.default, {
     connectionString: process.env.DB_URL
   });
-  https2.register(import_formbody.default);
-  https2.register(routes);
-  https2.listen({ port: process.env.PORT, host: "0.0.0.0" }, (err, address) => {
+  server.register(import_formbody.default);
+  server.register(routes);
+  server.listen({ port: process.env.PORT, host: "0.0.0.0" }, (err, address) => {
     if (err) {
-      https2.log.error(err);
+      server.log.error(err);
     }
   });
 };

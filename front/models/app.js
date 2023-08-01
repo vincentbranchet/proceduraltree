@@ -6,11 +6,13 @@ export class App {
         this.pipe = [],
         this.drawn = {value: 0},
         this.canvas = document.createElement('canvas'),
-        this.context = this.canvas.getContext('2d')
+        this.context = this.canvas.getContext('2d'),
+        this.container = document.getElementById('main-container')
     }
 
     start() {
         this.buildCanvas()
+        this.fillBackground()
 
         this.pipe.push({ x: (this.canvas.width / 2), y: this.canvas.height, angle: -Math.PI / 2, depth: 0, thickness: config.branchThickness });
 
@@ -25,12 +27,16 @@ export class App {
     }
 
     buildCanvas() {
-        this.canvas.width = document.body.clientWidth;
-        this.canvas.height = window.innerHeight;
-        document.body.appendChild(this.canvas);
+        this.canvas.width = config.canvasWidth;
+        this.canvas.height = config.canvasHeight;
+        this.container.appendChild(this.canvas);
 
         this.context.fillStyle = config.skyColor;
         this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+
+    fillBackground() {
+        this.container.style.backgroundColor = config.skyColor;
     }
 
     drawTree(x, y, angle, depth, thickness, curveControlPointX = x, curveControlPointY = y) {

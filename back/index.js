@@ -32,17 +32,18 @@ const env = {
 }
 
 const start = async () => {
-    await https.register(fastifyEnv, env)
+    const server = http
+    await server.register(fastifyEnv, env)
 
-    https.register(fastifyMysql, {
+    server.register(fastifyMysql, {
         connectionString: process.env.DB_URL
     })
-    https.register(fastifyFormbody)
-    https.register(routes)
+    server.register(fastifyFormbody)
+    server.register(routes)
 
-    https.listen({ port: process.env.PORT, host: "0.0.0.0" }, (err, address) => {
+    server.listen({ port: process.env.PORT, host: "0.0.0.0" }, (err, address) => {
         if (err) {
-            https.log.error(err)
+            server.log.error(err)
         }
     })
 }

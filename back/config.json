@@ -50,6 +50,8 @@
         "branchThicknessVariation": 0.6,
         "leafProbability": 0.9,
         "leafSize": 5,
-        "leafColorVariation": 0.5
+        "leafColorVariation": 0.5,
+        "canvasWidth": 1000,
+        "canvasHeight": 1000
     }
 }
