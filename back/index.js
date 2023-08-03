@@ -32,7 +32,7 @@ const env = {
 }
 
 const start = async () => {
-    const server = http
+    const server = https
     await server.register(fastifyEnv, env)
 
     server.register(fastifyMysql, {

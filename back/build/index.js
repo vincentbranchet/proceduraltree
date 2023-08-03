@@ -54752,26 +54752,21 @@ async function routes(server, options) {
     const html = import_fs.default.readFileSync("front/views/create.html");
     reply.header("Content-Type", "text/html").send(html);
   });
-  server.get("/:hash", (request, reply) => {
-    const { first_sight } = request.query;
-    server.mysql.query(
-      "SELECT * FROM seeds WHERE hash = ?",
-      [request.params.hash],
-      (err, result) => {
-        if (result.length === 1) {
-          try {
-            const js = import_fs.default.readFileSync(process.env.FRONT_JS);
-            const html = import_fs.default.readFileSync("front/views/index.html");
-            const config = import_fs.default.readFileSync(process.env.BACK_CONFIG);
-            const clientJs = js.toString().replace("PLACEHOLDER_NAME", result[0].name).replace("PLACEHOLDER_BIRTHDAY", result[0].planted).replace('"PLACEHOLDER_CONFIG"', config);
-            const clientHtml = html.toString().replace("PLACEHOLDER_APP_CODE", clientJs).replace("PLACEHOLDER_TREE_NAME", result[0].name);
-            reply.header("Content-Type", "text/html").send(clientHtml);
-          } catch (err2) {
-            reply.send(err2);
-          }
-        }
-      }
-    );
+  server.get("/cgv", (request, reply) => {
+    try {
+      const html = import_fs.default.readFileSync("front/views/cgv.html");
+      reply.header("Content-Type", "text/html").send(html);
+    } catch (err) {
+      reply.send(err);
+    }
+  });
+  server.get("/mentions", (request, reply) => {
+    try {
+      const html = import_fs.default.readFileSync("front/views/mentions.html");
+      reply.header("Content-Type", "text/html").send(html);
+    } catch (err) {
+      reply.send(err);
+    }
   });
   server.post("/checkout", async (request, reply) => {
     const stripe = new stripe_esm_node_default(process.env.STRIPE_API_KEY);
@@ -54810,6 +54805,27 @@ async function routes(server, options) {
     } catch (err) {
       reply.send(err);
     }
+  });
+  server.get("/:hash", (request, reply) => {
+    const { first_sight } = request.query;
+    server.mysql.query(
+      "SELECT * FROM seeds WHERE hash = ?",
+      [request.params.hash],
+      (err, result) => {
+        if (result.length === 1) {
+          try {
+            const js = import_fs.default.readFileSync(process.env.FRONT_JS);
+            const html = import_fs.default.readFileSync("front/views/index.html");
+            const config = import_fs.default.readFileSync(process.env.BACK_CONFIG);
+            const clientJs = js.toString().replace("PLACEHOLDER_NAME", result[0].name).replace("PLACEHOLDER_BIRTHDAY", result[0].planted).replace('"PLACEHOLDER_CONFIG"', config);
+            const clientHtml = html.toString().replace("PLACEHOLDER_APP_CODE", clientJs).replace("PLACEHOLDER_TREE_NAME", result[0].name);
+            reply.header("Content-Type", "text/html").send(clientHtml);
+          } catch (err2) {
+            reply.send(err2);
+          }
+        }
+      }
+    );
   });
 }
 

@@ -9,30 +9,26 @@ export default async function routes(server, options) {
         reply.header('Content-Type', 'text/html').send(html)
     })
 
-    // SHOW
-    server.get('/:hash', (request, reply) => {
-        const { first_sight } = request.query
-        // if first_sight is true, then show popup in html template
-        server.mysql.query(
-            'SELECT * FROM seeds WHERE hash = ?',
-            [request.params.hash],
-            (err, result) => {
-                if (result.length === 1) {
-                    try {
-                        const js = fs.readFileSync(process.env.FRONT_JS)
-                        const html = fs.readFileSync('front/views/index.html')
-                        const config = fs.readFileSync(process.env.BACK_CONFIG)
+    // CGV
+    server.get('/cgv', (request, reply) => {
+        try {
+            const html = fs.readFileSync('front/views/cgv.html')
 
-                        const clientJs = js.toString().replace('PLACEHOLDER_NAME', result[0].name).replace('PLACEHOLDER_BIRTHDAY', result[0].planted).replace('\"PLACEHOLDER_CONFIG\"', config)
-                        const clientHtml = html.toString().replace('PLACEHOLDER_APP_CODE', clientJs).replace('PLACEHOLDER_TREE_NAME', result[0].name)
+            reply.header('Content-Type', 'text/html').send(html)
+        } catch (err) {
+            reply.send(err)
+        }
+    })
 
-                        reply.header('Content-Type', 'text/html').send(clientHtml)
-                    } catch (err) {
-                        reply.send(err)
-                    }
-                }
-            }
-        )
+    // Mentions légales
+    server.get('/mentions', (request, reply) => {
+        try {
+            const html = fs.readFileSync('front/views/mentions.html')
+
+            reply.header('Content-Type', 'text/html').send(html)
+        } catch (err) {
+            reply.send(err)
+        }
     })
 
     // CHECKOUT - Process
@@ -64,7 +60,7 @@ export default async function routes(server, options) {
             const toHash = name + date
             const hash = crypto.createHash('md5').update(toHash).digest('hex')
             const datetime = new Date(date).toISOString().slice(0, 19).replace('T', ' ')
-    
+
             server.mysql.query(
                 'INSERT INTO seeds ( name, planted, hash ) VALUES (?, ?, ?)',
                 [name, datetime, hash],
@@ -80,5 +76,31 @@ export default async function routes(server, options) {
         } catch (err) {
             reply.send(err)
         }
+    })
+
+    // SHOW
+    server.get('/:hash', (request, reply) => {
+        const { first_sight } = request.query
+        // if first_sight is true, then show popup in html template
+        server.mysql.query(
+            'SELECT * FROM seeds WHERE hash = ?',
+            [request.params.hash],
+            (err, result) => {
+                if (result.length === 1) {
+                    try {
+                        const js = fs.readFileSync(process.env.FRONT_JS)
+                        const html = fs.readFileSync('front/views/index.html')
+                        const config = fs.readFileSync(process.env.BACK_CONFIG)
+
+                        const clientJs = js.toString().replace('PLACEHOLDER_NAME', result[0].name).replace('PLACEHOLDER_BIRTHDAY', result[0].planted).replace('\"PLACEHOLDER_CONFIG\"', config)
+                        const clientHtml = html.toString().replace('PLACEHOLDER_APP_CODE', clientJs).replace('PLACEHOLDER_TREE_NAME', result[0].name)
+
+                        reply.header('Content-Type', 'text/html').send(clientHtml)
+                    } catch (err) {
+                        reply.send(err)
+                    }
+                }
+            }
+        )
     })
 }
