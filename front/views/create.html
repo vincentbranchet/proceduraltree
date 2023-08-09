@@ -215,7 +215,7 @@ Icone d&#x27;un arbre à planter sur digitarbre.fr" class="team-member-image-two
                             <div class="pricing-content-2">
                                 <div class="tagline-2">Tarif</div>
                                 <div class="pricing-info-2">
-                                    <h3 class="heading-3">Arbre unique généré aléatoirement</h3>
+                                    <h3 class="heading-3">Arbre virtuel</h3>
                                     <h3 class="heading-4">9,90 €</h3>
                                 </div>
                                 <div class="pricing-divider-two-2"></div>
@@ -229,8 +229,8 @@ Icone d&#x27;un arbre à planter sur digitarbre.fr" class="team-member-image-two
                                         <p class="tagline-2">Durée d&#x27;accès</p>
                                     </div>
                                     <div class="pricing-block-2">
-                                        <p class="pricing-details-text-2">1954</p>
-                                        <p class="tagline-2">Nombre de feuilles</p>
+                                        <p class="pricing-details-text-2">Unique</p>
+                                        <p class="tagline-2">Des millions d'apparences possibles</p>
                                     </div>
                                 </div>
                             </div>
@@ -239,13 +239,16 @@ Icone d&#x27;un arbre à planter sur digitarbre.fr" class="team-member-image-two
                             <div class="form-block-2 w-form">
                                 <form method="POST" action="/checkout" class="form" style="margin-bottom:2rem">
                                     <label for="name">Nom de mon arbre</label>
-                                    <input type="text" name="name" class="text-field-2 w-input">
+                                    <input type="text" name="name" class="text-field-2 w-input" required>
 
                                     <label for="date">Date à laquelle je veux le planter</label>
                                     <input type="date" name="date" required class="date-field-2 w-input">
 
-                                    <div class="info">Si vous choisissz une date dans le passé, votre arbre sera créé
+                                    <div style="font-size:0.8rem;margin-bottom:0.8rem">Si vous choisissz une date dans le passé, votre arbre sera créé
                                         comme s'il avait poussé normalement depuis cette date.</div>
+
+                                        <label for="email">Adresse mail (pour vous envoyer le lien vers votre arbre, et rien d'autre !)</label>
+                                        <input type="email" name="email" class="email-field-2 w-input" required>
 
                                     <div style="margin:auto">
                                         <input class="submit-button w-button" id="action" type="submit"

@@ -1,6 +1,18 @@
 import crypto from "crypto"
 import fs from "fs"
 import Stripe from 'stripe'
+import nodemailer from "nodemailer"
+
+let transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'monarbrevirtuel@gmail.com',
+        pass: 'ppmaquyhxlaiqkif'
+    },
+    tls: {
+        rejectUnauthorized: false
+    }
+})
 
 export default async function routes(server, options) {
     // INDEX
@@ -34,27 +46,27 @@ export default async function routes(server, options) {
     // CHECKOUT - Process
     server.post('/checkout', async (request, reply) => {
         const stripe = new Stripe(process.env.STRIPE_API_KEY)
-        const { name, date } = request.body
+        const { name, date, email } = request.body
 
         const session = await stripe.checkout.sessions.create({
             line_items: [
                 {
-                    // Virtualyptus - 14,99€
                     price: process.env.STRIPE_PRODUCT_KEY,
                     quantity: 1,
                 },
             ],
             mode: 'payment',
-            success_url: `http://${process.env.HOST_NAME}/checkout-success?name=${name}&date=${date}`,
+            customer_email: email,
+            success_url: `http://${process.env.HOST_NAME}/checkout-success?name=${name}&date=${date}&email=${email}`,
             cancel_url: `http://${process.env.HOST_NAME}/`,
-        });
+        })
 
         reply.redirect(303, session.url);
     })
 
     // CHECKOUT - Success
     server.get('/checkout-success', (request, reply) => {
-        const { name, date } = request.query
+        const { name, date, email } = request.query
 
         try {
             const toHash = name + date
@@ -68,6 +80,36 @@ export default async function routes(server, options) {
                     if (err)
                         reply.send(err)
                     else {
+                        const payload = {
+                            from: 'monarbrevirtuel@gmail.com',
+                            to: email,
+                            subject: 'Confirmation de votre commande sur MonArbreVirtuel.com',
+                            text: `Cher.e client.e,
+
+                            Nous tenons à vous remercier chaleureusement pour votre commande sur MonArbreVirtuel.com.
+                            
+                            Voici un récapitulatif de votre commande :
+                            
+                                Nom de l'arbre : ${name}
+                                Date de plantation : ${date}
+                                Lien d'accès : https://www.monarbrevirtuel.com/${hash}
+                                Prix : 9,90 €
+                                Temps de maturité : 18 ans
+                            
+                            Nous sommes ravis de vous informer que le lien d'accès que nous vous avons fourni est déjà actif, et restera disponible à vie. Cela signifie que vous pourrez suivre la croissance et le développement de votre arbre virtuel à tout moment, et cela tout au long de sa vie.
+                            
+                            Merci encore, et si vous avez des questions ou besoin d'assistance, n'hésitez pas à nous contacter. 
+                            
+                            Cordialement,
+                            Diane & Vincent`
+                        }
+                        transporter.sendMail(payload, (err, info) => {
+                            if (err)
+                                console.log(err)
+                            else {
+                                console.log('Confirmation email sent to: ' + email)
+                            }
+                        })
                         // TODO : add 'first_sight' param
                         reply.redirect('/' + hash)
                     }
