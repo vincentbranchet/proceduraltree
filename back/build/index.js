@@ -65643,22 +65643,22 @@ async function routes(server, options) {
               subject: "Confirmation de votre commande sur MonArbreVirtuel.com",
               text: `Cher.e client.e,
 
-                            Nous tenons \xE0 vous remercier chaleureusement pour votre commande sur MonArbreVirtuel.com.
+Nous tenons \xE0 vous remercier chaleureusement pour votre commande sur MonArbreVirtuel.com.
                             
-                            Voici un r\xE9capitulatif de votre commande :
+Voici un r\xE9capitulatif de votre commande :
                             
-                                Nom de l'arbre : ${name}
-                                Date de plantation : ${date}
-                                Lien d'acc\xE8s : https://www.monarbrevirtuel.com/${hash}
-                                Prix : 9,90 \u20AC
-                                Temps de maturit\xE9 : 18 ans
+    Nom de l'arbre : ${name}
+    Date de plantation : ${date}
+    Lien d'acc\xE8s : https://www.monarbrevirtuel.com/${hash}
+    Prix : 9,90 \u20AC
+    Temps de maturit\xE9 : 18 ans
                             
-                            Nous sommes ravis de vous informer que le lien d'acc\xE8s que nous vous avons fourni est d\xE9j\xE0 actif, et restera disponible \xE0 vie. Cela signifie que vous pourrez suivre la croissance et le d\xE9veloppement de votre arbre virtuel \xE0 tout moment, et cela tout au long de sa vie.
+Nous sommes ravis de vous informer que le lien d'acc\xE8s que nous vous avons fourni est d\xE9j\xE0 actif, et restera disponible \xE0 vie. Cela signifie que vous pourrez suivre la croissance et le d\xE9veloppement de votre arbre virtuel \xE0 tout moment, et cela tout au long de sa vie.
                             
-                            Merci encore, et si vous avez des questions ou besoin d'assistance, n'h\xE9sitez pas \xE0 nous contacter. 
+Merci encore, et si vous avez des questions ou besoin d'assistance, n'h\xE9sitez pas \xE0 nous contacter. 
                             
-                            Cordialement,
-                            Diane & Vincent`
+Cordialement,
+Diane & Vincent`
             };
             transporter.sendMail(payload, (err2, info) => {
               if (err2)
