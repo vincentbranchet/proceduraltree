@@ -34,6 +34,7 @@
   // front/models/config.js
   var Config = class {
     constructor(constants2, seed2) {
+      this.seed = seed2;
       this.seedRandom = this.createRandomGenerator(seed2.name);
       this.branchAngle = Math.PI / 2;
       this.branchAngleVariation = Math.PI / 16;
@@ -79,10 +80,12 @@
   var App = class {
     constructor() {
       this.pipe = [], this.drawn = { value: 0 }, this.canvas = document.createElement("canvas"), this.context = this.canvas.getContext("2d"), this.container = document.getElementById("main-container");
+      this.info = document.getElementById("info-text");
     }
     start() {
       this.buildCanvas();
       this.fillBackground();
+      this.writeInfo();
       this.pipe.push({ x: this.canvas.width / 2, y: this.canvas.height, angle: -Math.PI / 2, depth: 0, thickness: config.branchThickness });
       while (this.pipe.length > 0 && this.drawn.value <= config.age) {
         const next = this.pipe[0];
@@ -100,6 +103,16 @@
     }
     fillBackground() {
       this.container.style.backgroundColor = config.skyColor;
+    }
+    writeInfo() {
+      this.info.innerHTML = `Cet arbre s'appelle ${config.seed.name}. Il pousse depuis ${config.age} jours.
+
+Pour le partager et le retrouver facilement, copiez le lien de cette page depuis la barre d'adresse de votre navigateur, ou ci-dessous :
+
+${window.location.href} 
+
+
+L'acc\xE8s \xE0 cet arbre est libre et gratuit pour tout le monde, et le restera pour toujours.`;
     }
     drawTree(x, y, angle, depth, thickness, curveControlPointX = x, curveControlPointY = y) {
       this.context.beginPath();

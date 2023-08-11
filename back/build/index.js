@@ -2434,7 +2434,7 @@ var require_server = __commonJS({
   "node_modules/fastify/lib/server.js"(exports, module2) {
     "use strict";
     var http3 = require("http");
-    var https2 = require("https");
+    var https3 = require("https");
     var dns = require("dns");
     var warnings = require_warnings();
     var { kState, kOptions, kServerBindings } = require_symbols();
@@ -2642,7 +2642,7 @@ var require_server = __commonJS({
         server.on("session", sessionTimeout(options.http2SessionTimeout));
       } else {
         if (httpsOptions) {
-          server = https2.createServer(httpsOptions, httpHandler);
+          server = https3.createServer(httpsOptions, httpHandler);
         } else {
           server = http3.createServer(options.http, httpHandler);
         }
@@ -4646,7 +4646,7 @@ var require_atomic_sleep = __commonJS({
 var require_sonic_boom = __commonJS({
   "node_modules/sonic-boom/index.js"(exports, module2) {
     "use strict";
-    var fs2 = require("fs");
+    var fs3 = require("fs");
     var EventEmitter2 = require("events");
     var inherits = require("util").inherits;
     var path = require("path");
@@ -4695,21 +4695,21 @@ var require_sonic_boom = __commonJS({
       if (sonic.sync) {
         try {
           if (sonic.mkdir)
-            fs2.mkdirSync(path.dirname(file), { recursive: true });
-          const fd = fs2.openSync(file, flags, mode);
+            fs3.mkdirSync(path.dirname(file), { recursive: true });
+          const fd = fs3.openSync(file, flags, mode);
           fileOpened(null, fd);
         } catch (err) {
           fileOpened(err);
           throw err;
         }
       } else if (sonic.mkdir) {
-        fs2.mkdir(path.dirname(file), { recursive: true }, (err) => {
+        fs3.mkdir(path.dirname(file), { recursive: true }, (err) => {
           if (err)
             return fileOpened(err);
-          fs2.open(file, flags, mode, fileOpened);
+          fs3.open(file, flags, mode, fileOpened);
         });
       } else {
-        fs2.open(file, flags, mode, fileOpened);
+        fs3.open(file, flags, mode, fileOpened);
       }
     }
     function SonicBoom(opts) {
@@ -4761,7 +4761,7 @@ var require_sonic_boom = __commonJS({
               }
             } else {
               setTimeout(() => {
-                fs2.write(this.fd, this._writingBuf, "utf8", this.release);
+                fs3.write(this.fd, this._writingBuf, "utf8", this.release);
               }, BUSY_WRITE_TIMEOUT);
             }
           } else {
@@ -4778,12 +4778,12 @@ var require_sonic_boom = __commonJS({
         this._writingBuf = this._writingBuf.slice(n);
         if (this._writingBuf.length) {
           if (!this.sync) {
-            fs2.write(this.fd, this._writingBuf, "utf8", this.release);
+            fs3.write(this.fd, this._writingBuf, "utf8", this.release);
             return;
           }
           try {
             do {
-              const n2 = fs2.writeSync(this.fd, this._writingBuf, "utf8");
+              const n2 = fs3.writeSync(this.fd, this._writingBuf, "utf8");
               this._len -= n2;
               this._writingBuf = this._writingBuf.slice(n2);
             } while (this._writingBuf);
@@ -4793,7 +4793,7 @@ var require_sonic_boom = __commonJS({
           }
         }
         if (this._fsync) {
-          fs2.fsyncSync(this.fd);
+          fs3.fsyncSync(this.fd);
         }
         const len = this._len;
         if (this._reopening) {
@@ -4891,7 +4891,7 @@ var require_sonic_boom = __commonJS({
       const fd = this.fd;
       this.once("ready", () => {
         if (fd !== this.fd) {
-          fs2.close(fd, (err) => {
+          fs3.close(fd, (err) => {
             if (err) {
               return this.emit("error", err);
             }
@@ -4940,7 +4940,7 @@ var require_sonic_boom = __commonJS({
           buf = this._bufs[0];
         }
         try {
-          const n = fs2.writeSync(this.fd, buf, "utf8");
+          const n = fs3.writeSync(this.fd, buf, "utf8");
           buf = buf.slice(n);
           this._len = Math.max(this._len - n, 0);
           if (buf.length <= 0) {
@@ -4967,13 +4967,13 @@ var require_sonic_boom = __commonJS({
       sonic._writingBuf = sonic._writingBuf || sonic._bufs.shift() || "";
       if (sonic.sync) {
         try {
-          const written = fs2.writeSync(sonic.fd, sonic._writingBuf, "utf8");
+          const written = fs3.writeSync(sonic.fd, sonic._writingBuf, "utf8");
           release(null, written);
         } catch (err) {
           release(err);
         }
       } else {
-        fs2.write(sonic.fd, sonic._writingBuf, "utf8", release);
+        fs3.write(sonic.fd, sonic._writingBuf, "utf8", release);
       }
     }
     function actualClose(sonic) {
@@ -4984,7 +4984,7 @@ var require_sonic_boom = __commonJS({
       sonic.destroyed = true;
       sonic._bufs = [];
       if (sonic.fd !== 1 && sonic.fd !== 2) {
-        fs2.close(sonic.fd, done);
+        fs3.close(sonic.fd, done);
       } else {
         setImmediate(done);
       }
@@ -15175,7 +15175,7 @@ var require_schemes = __commonJS({
       parse: httpParse,
       serialize: httpSerialize
     };
-    var https2 = {
+    var https3 = {
       scheme: "https",
       domainHost: http3.domainHost,
       parse: httpParse,
@@ -15207,7 +15207,7 @@ var require_schemes = __commonJS({
     };
     var SCHEMES = {
       http: http3,
-      https: https2,
+      https: https3,
       ws,
       wss,
       urn,
@@ -15735,12 +15735,12 @@ var require_dist = __commonJS({
         throw new Error(`Unknown format "${name}"`);
       return f;
     };
-    function addFormats(ajv, list, fs2, exportName) {
+    function addFormats(ajv, list, fs3, exportName) {
       var _a;
       var _b;
       (_a = (_b = ajv.opts.code).formats) !== null && _a !== void 0 ? _a : _b.formats = codegen_1._`require("ajv-formats/dist/formats").${exportName}`;
       for (const f of list)
-        ajv.addFormat(f, fs2[f]);
+        ajv.addFormat(f, fs3[f]);
     }
     module2.exports = exports = formatsPlugin;
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -48462,7 +48462,7 @@ var require_package2 = __commonJS({
 // node_modules/dotenv/lib/main.js
 var require_main = __commonJS({
   "node_modules/dotenv/lib/main.js"(exports, module2) {
-    var fs2 = require("fs");
+    var fs3 = require("fs");
     var path = require("path");
     var os = require("os");
     var crypto5 = require("crypto");
@@ -48587,7 +48587,7 @@ var require_main = __commonJS({
         }
       }
       try {
-        const parsed = DotenvModule.parse(fs2.readFileSync(dotenvPath, { encoding }));
+        const parsed = DotenvModule.parse(fs3.readFileSync(dotenvPath, { encoding }));
         let processEnv = process.env;
         if (options && options.processEnv != null) {
           processEnv = options.processEnv;
@@ -48606,7 +48606,7 @@ var require_main = __commonJS({
       if (_dotenvKey(options).length === 0) {
         return DotenvModule.configDotenv(options);
       }
-      if (!fs2.existsSync(vaultPath)) {
+      if (!fs3.existsSync(vaultPath)) {
         _warn(`You set DOTENV_KEY but you are missing a .env.vault file at ${vaultPath}. Did you forget to build it?`);
         return DotenvModule.configDotenv(options);
       }
@@ -51039,7 +51039,7 @@ var require_fetch = __commonJS({
   "node_modules/nodemailer/lib/fetch/index.js"(exports, module2) {
     "use strict";
     var http3 = require("http");
-    var https2 = require("https");
+    var https3 = require("https");
     var urllib = require("url");
     var zlib = require("zlib");
     var PassThrough = require("stream").PassThrough;
@@ -51069,7 +51069,7 @@ var require_fetch = __commonJS({
       let finished = false;
       let cookies;
       let body;
-      let handler = parsed.protocol === "https:" ? https2 : http3;
+      let handler = parsed.protocol === "https:" ? https3 : http3;
       let headers = {
         "accept-encoding": "gzip,deflate",
         "user-agent": "nodemailer/" + packageData.version
@@ -51279,7 +51279,7 @@ var require_shared = __commonJS({
     "use strict";
     var urllib = require("url");
     var util = require("util");
-    var fs2 = require("fs");
+    var fs3 = require("fs");
     var nmfetch = require_fetch();
     var dns = require("dns");
     var net = require("net");
@@ -51623,7 +51623,7 @@ var require_shared = __commonJS({
           }
           return callback(null, /\bbase64$/i.test(parts[1]) ? Buffer.from(parts[2], "base64") : Buffer.from(decodeURIComponent(parts[2])));
         } else if (content.path) {
-          return resolveStream(fs2.createReadStream(content.path), callback);
+          return resolveStream(fs3.createReadStream(content.path), callback);
         }
       }
       if (typeof data[key].content === "string" && !["utf8", "usascii", "ascii"].includes(encoding)) {
@@ -54954,7 +54954,7 @@ var require_mime_node = __commonJS({
   "node_modules/nodemailer/lib/mime-node/index.js"(exports, module2) {
     "use strict";
     var crypto5 = require("crypto");
-    var fs2 = require("fs");
+    var fs3 = require("fs");
     var punycode = require("punycode");
     var PassThrough = require("stream").PassThrough;
     var shared = require_shared();
@@ -55662,7 +55662,7 @@ var require_mime_node = __commonJS({
             setImmediate(() => contentStream.emit("error", new Error("File access rejected for " + content.path)));
             return contentStream;
           }
-          return fs2.createReadStream(content.path);
+          return fs3.createReadStream(content.path);
         } else if (content && typeof content.href === "string") {
           if (this.disableUrlAccess) {
             contentStream = new PassThrough();
@@ -56674,7 +56674,7 @@ var require_dkim = __commonJS({
     var RelaxedBody = require_relaxed_body();
     var sign = require_sign();
     var PassThrough = require("stream").PassThrough;
-    var fs2 = require("fs");
+    var fs3 = require("fs");
     var path = require("path");
     var crypto5 = require("crypto");
     var DKIM_ALGO = "sha256";
@@ -56709,10 +56709,10 @@ var require_dkim = __commonJS({
         if (!this.cache || !this.cachePath) {
           return;
         }
-        fs2.unlink(this.cachePath, () => false);
+        fs3.unlink(this.cachePath, () => false);
       }
       createReadCache() {
-        this.cache = fs2.createReadStream(this.cachePath);
+        this.cache = fs3.createReadStream(this.cachePath);
         this.cache.once("error", (err) => {
           this.cleanup();
           this.output.emit("error", err);
@@ -56768,7 +56768,7 @@ var require_dkim = __commonJS({
       }
       createWriteCache() {
         this.output.usingCache = true;
-        this.cache = fs2.createWriteStream(this.cachePath);
+        this.cache = fs3.createWriteStream(this.cachePath);
         this.cache.once("error", (err) => {
           this.cleanup();
           this.relaxedBody.unpipe(this.cache);
@@ -65676,7 +65676,6 @@ async function routes(server, options) {
     }
   });
   server.get("/:hash", (request, reply) => {
-    const { first_sight } = request.query;
     server.mysql.query(
       "SELECT * FROM seeds WHERE hash = ?",
       [request.params.hash],
@@ -65699,8 +65698,16 @@ async function routes(server, options) {
 }
 
 // back/index.js
+var import_fs2 = __toESM(require("fs"));
 var http2 = new import_fastify.default({
   logger: true
+});
+var https2 = new import_fastify.default({
+  logger: true,
+  https: {
+    key: import_fs2.default.readFileSync("/etc/letsencrypt/live/monarbrevirtuel.com/privkey.pem"),
+    cert: import_fs2.default.readFileSync("/etc/letsencrypt/live/monarbrevirtuel.com/fullchain.pem")
+  }
 });
 var env = {
   schema: {
@@ -65716,7 +65723,7 @@ var env = {
   dotenv: true
 };
 var start = async () => {
-  const server = http2;
+  const server = https2;
   await server.register(import_env.default, env);
   server.register(import_mysql.default, {
     connectionString: process.env.DB_URL

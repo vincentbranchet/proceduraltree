@@ -8,11 +8,13 @@ export class App {
         this.canvas = document.createElement('canvas'),
         this.context = this.canvas.getContext('2d'),
         this.container = document.getElementById('main-container')
+        this.info = document.getElementById('info-text')
     }
 
     start() {
         this.buildCanvas()
         this.fillBackground()
+        this.writeInfo()
 
         this.pipe.push({ x: (this.canvas.width / 2), y: this.canvas.height, angle: -Math.PI / 2, depth: 0, thickness: config.branchThickness });
 
@@ -37,6 +39,13 @@ export class App {
 
     fillBackground() {
         this.container.style.backgroundColor = config.skyColor;
+    }
+
+    writeInfo() {
+        this.info.innerHTML = `Cet arbre s'appelle ${config.seed.name}. Il pousse depuis ${config.age} jours.\n
+Pour le partager et le retrouver facilement, copiez le lien de cette page depuis la barre d'adresse de votre navigateur, ou ci-dessous :\n
+${window.location.href} \n\n
+L'accès à cet arbre est libre et gratuit pour tout le monde, et le restera pour toujours.`
     }
 
     drawTree(x, y, angle, depth, thickness, curveControlPointX = x, curveControlPointY = y) {

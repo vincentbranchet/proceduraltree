@@ -2,6 +2,7 @@ import { hashCode } from "./helpers.js"
 
 class Config {
     constructor(constants, seed) {
+        this.seed = seed
         this.seedRandom = this.createRandomGenerator(seed.name)
         this.branchAngle = Math.PI / 2
         this.branchAngleVariation = Math.PI / 16

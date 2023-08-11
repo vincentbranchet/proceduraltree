@@ -110,7 +110,6 @@ export default async function routes(server, options) {
                                 console.log('Confirmation email sent to: ' + email)
                             }
                         })
-                        // TODO : add 'first_sight' param
                         reply.redirect('/' + hash)
                     }
                 }
@@ -122,8 +121,6 @@ export default async function routes(server, options) {
 
     // SHOW
     server.get('/:hash', (request, reply) => {
-        const { first_sight } = request.query
-        // if first_sight is true, then show popup in html template
         server.mysql.query(
             'SELECT * FROM seeds WHERE hash = ?',
             [request.params.hash],
