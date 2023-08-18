@@ -447,13 +447,13 @@ var require_time_tree = __commonJS({
       [kGetNode](nodeId) {
         return this.tableId.get(nodeId);
       }
-      [kAddNode](parent, childName, start2) {
+      [kAddNode](parent, childName, start) {
         const isRoot = parent === null;
         if (isRoot) {
           this.root = {
             id: "root",
             label: childName,
-            start: start2,
+            start,
             nodes: []
           };
           this[kTrackNode](this.root);
@@ -464,7 +464,7 @@ var require_time_tree = __commonJS({
         const childNode = {
           id: nodeId,
           parent,
-          start: start2,
+          start,
           label: childName,
           nodes: []
         };
@@ -472,8 +472,8 @@ var require_time_tree = __commonJS({
         this[kTrackNode](childNode);
         return nodeId;
       }
-      start(parent, childName, start2 = Date.now()) {
-        return this[kAddNode](parent, childName, start2);
+      start(parent, childName, start = Date.now()) {
+        return this[kAddNode](parent, childName, start);
       }
       stop(nodeId, stop = Date.now()) {
         const node = this[kGetNode](nodeId);
@@ -16759,27 +16759,27 @@ var require_forwarded = __commonJS({
     function parse(header) {
       var end = header.length;
       var list = [];
-      var start2 = header.length;
+      var start = header.length;
       for (var i = header.length - 1; i >= 0; i--) {
         switch (header.charCodeAt(i)) {
           case 32:
-            if (start2 === end) {
-              start2 = end = i;
+            if (start === end) {
+              start = end = i;
             }
             break;
           case 44:
-            if (start2 !== end) {
-              list.push(header.substring(start2, end));
+            if (start !== end) {
+              list.push(header.substring(start, end));
             }
-            start2 = end = i;
+            start = end = i;
             break;
           default:
-            start2 = i;
+            start = i;
             break;
         }
       }
-      if (start2 !== end) {
-        list.push(header.substring(start2, end));
+      if (start !== end) {
+        list.push(header.substring(start, end));
       }
       return list;
     }
@@ -18591,14 +18591,14 @@ var require_yallist = __commonJS({
       }
       return ret;
     };
-    Yallist.prototype.splice = function(start2, deleteCount, ...nodes) {
-      if (start2 > this.length) {
-        start2 = this.length - 1;
+    Yallist.prototype.splice = function(start, deleteCount, ...nodes) {
+      if (start > this.length) {
+        start = this.length - 1;
       }
-      if (start2 < 0) {
-        start2 = this.length + start2;
+      if (start < 0) {
+        start = this.length + start;
       }
-      for (var i = 0, walker = this.head; walker !== null && i < start2; i++) {
+      for (var i = 0, walker = this.head; walker !== null && i < start; i++) {
         walker = walker.next;
       }
       var ret = [];
@@ -26414,7 +26414,7 @@ var require_lib2 = __commonJS({
     var sets = require_sets();
     var positions = require_positions();
     module2.exports = (regexpStr) => {
-      var i = 0, l, c, start2 = { type: types.ROOT, stack: [] }, lastGroup = start2, last = start2.stack, groupStack = [];
+      var i = 0, l, c, start = { type: types.ROOT, stack: [] }, lastGroup = start, last = start.stack, groupStack = [];
       var repeatErr = (i2) => {
         util.error(regexpStr, `Nothing to repeat at column ${i2 - 1}`);
       };
@@ -26591,7 +26591,7 @@ var require_lib2 = __commonJS({
       if (groupStack.length !== 0) {
         util.error(regexpStr, "Unterminated group");
       }
-      return start2;
+      return start;
     };
     module2.exports.types = types;
   }
@@ -30430,7 +30430,7 @@ var require_set_cookie = __commonJS({
       }
       var cookiesStrings = [];
       var pos = 0;
-      var start2;
+      var start;
       var ch;
       var lastComma;
       var nextStart;
@@ -30446,7 +30446,7 @@ var require_set_cookie = __commonJS({
         return ch !== "=" && ch !== ";" && ch !== ",";
       }
       while (pos < cookiesString.length) {
-        start2 = pos;
+        start = pos;
         cookiesSeparatorFound = false;
         while (skipWhitespace()) {
           ch = cookiesString.charAt(pos);
@@ -30461,8 +30461,8 @@ var require_set_cookie = __commonJS({
             if (pos < cookiesString.length && cookiesString.charAt(pos) === "=") {
               cookiesSeparatorFound = true;
               pos = nextStart;
-              cookiesStrings.push(cookiesString.substring(start2, lastComma));
-              start2 = pos;
+              cookiesStrings.push(cookiesString.substring(start, lastComma));
+              start = pos;
             } else {
               pos = lastComma + 1;
             }
@@ -30471,7 +30471,7 @@ var require_set_cookie = __commonJS({
           }
         }
         if (!cookiesSeparatorFound || pos >= cookiesString.length) {
-          cookiesStrings.push(cookiesString.substring(start2, cookiesString.length));
+          cookiesStrings.push(cookiesString.substring(start, cookiesString.length));
         }
       }
       return cookiesStrings;
@@ -39536,12 +39536,12 @@ var require_string = __commonJS({
   "node_modules/mysql2/lib/parsers/string.js"(exports) {
     "use strict";
     var Iconv = require_lib3();
-    exports.decode = function(buffer, encoding, start2, end, options) {
+    exports.decode = function(buffer, encoding, start, end, options) {
       if (Buffer.isEncoding(encoding)) {
-        return buffer.toString(encoding, start2, end);
+        return buffer.toString(encoding, start, end);
       }
       const decoder = Iconv.getDecoder(encoding, options || {});
-      const res = decoder.write(buffer.slice(start2, end));
+      const res = decoder.write(buffer.slice(start, end));
       const trail = decoder.end();
       return trail ? res + trail : res;
     };
@@ -39580,12 +39580,12 @@ var require_packet = __commonJS({
     var exponent = "e".charCodeAt(0);
     var exponentCapital = "E".charCodeAt(0);
     var Packet = class _Packet {
-      constructor(id, buffer, start2, end) {
+      constructor(id, buffer, start, end) {
         this.sequenceId = id;
         this.numPackets = 1;
         this.buffer = buffer;
-        this.start = start2;
-        this.offset = start2 + 4;
+        this.start = start;
+        this.offset = start + 4;
         this.end = end;
       }
       // ==============================
@@ -39882,13 +39882,13 @@ var require_packet = __commonJS({
         return this.readBuffer(len);
       }
       readNullTerminatedString(encoding) {
-        const start2 = this.offset;
+        const start = this.offset;
         let end = this.offset;
         while (this.buffer[end]) {
           end = end + 1;
         }
         this.offset = end + 1;
-        return StringParser.decode(this.buffer, encoding, start2, end);
+        return StringParser.decode(this.buffer, encoding, start, end);
       }
       // TODO reuse?
       readString(len, encoding) {
@@ -39917,7 +39917,7 @@ var require_packet = __commonJS({
           return Number(s);
         }
         let result = 0;
-        const start2 = this.offset;
+        const start = this.offset;
         const end = this.offset + len;
         let sign = 1;
         if (len === 0) {
@@ -39955,7 +39955,7 @@ var require_packet = __commonJS({
         if (!supportBigNumbers) {
           return num;
         }
-        str = this.buffer.toString("ascii", start2, end);
+        str = this.buffer.toString("ascii", start, end);
         if (num.toString() === str) {
           return num;
         }
@@ -40381,19 +40381,19 @@ var require_packet_parser = __commonJS({
         this.onPacket(packet);
       }
       executeStart(chunk) {
-        let start2 = 0;
+        let start = 0;
         const end = chunk.length;
-        while (end - start2 >= 3) {
-          this.length = readPacketLength(chunk, start2);
-          if (end - start2 >= this.length + this.packetHeaderLength) {
-            const sequenceId = chunk[start2 + 3];
+        while (end - start >= 3) {
+          this.length = readPacketLength(chunk, start);
+          if (end - start >= this.length + this.packetHeaderLength) {
+            const sequenceId = chunk[start + 3];
             if (this.length < MAX_PACKET_LENGTH && this.largePacketParts.length === 0) {
               this.onPacket(
                 new Packet(
                   sequenceId,
                   chunk,
-                  start2,
-                  start2 + this.packetHeaderLength + this.length
+                  start,
+                  start + this.packetHeaderLength + this.length
                 )
               );
             } else {
@@ -40402,27 +40402,27 @@ var require_packet_parser = __commonJS({
               }
               this.largePacketParts.push(
                 chunk.slice(
-                  start2 + this.packetHeaderLength,
-                  start2 + this.packetHeaderLength + this.length
+                  start + this.packetHeaderLength,
+                  start + this.packetHeaderLength + this.length
                 )
               );
               if (this.length < MAX_PACKET_LENGTH) {
                 this._flushLargePacket();
               }
             }
-            start2 += this.packetHeaderLength + this.length;
+            start += this.packetHeaderLength + this.length;
           } else {
-            this.buffer = [chunk.slice(start2 + 3, end)];
-            this.bufferLength = end - start2 - 3;
+            this.buffer = [chunk.slice(start + 3, end)];
+            this.bufferLength = end - start - 3;
             this.execute = _PacketParser.prototype.executePayload;
             return;
           }
         }
-        if (end - start2 > 0) {
-          this.headerLen = end - start2;
-          this.length = chunk[start2];
+        if (end - start > 0) {
+          this.headerLen = end - start;
+          this.length = chunk[start];
           if (this.headerLen === 2) {
-            this.length = chunk[start2] + (chunk[start2 + 1] << 8);
+            this.length = chunk[start] + (chunk[start + 1] << 8);
             this.execute = _PacketParser.prototype.executeHeader3;
           } else {
             this.execute = _PacketParser.prototype.executeHeader2;
@@ -40430,17 +40430,17 @@ var require_packet_parser = __commonJS({
         }
       }
       executePayload(chunk) {
-        let start2 = 0;
+        let start = 0;
         const end = chunk.length;
         const remainingPayload = this.length - this.bufferLength + this.packetHeaderLength - 3;
-        if (end - start2 >= remainingPayload) {
+        if (end - start >= remainingPayload) {
           const payload = Buffer.allocUnsafe(this.length + this.packetHeaderLength);
           let offset = 3;
           for (let i = 0; i < this.buffer.length; ++i) {
             this.buffer[i].copy(payload, offset);
             offset += this.buffer[i].length;
           }
-          chunk.copy(payload, offset, start2, start2 + remainingPayload);
+          chunk.copy(payload, offset, start, start + remainingPayload);
           const sequenceId = payload[3];
           if (this.length < MAX_PACKET_LENGTH && this.largePacketParts.length === 0) {
             this.onPacket(
@@ -40468,9 +40468,9 @@ var require_packet_parser = __commonJS({
           this.buffer = [];
           this.bufferLength = 0;
           this.execute = _PacketParser.prototype.executeStart;
-          start2 += remainingPayload;
-          if (end - start2 > 0) {
-            return this.execute(chunk.slice(start2, end));
+          start += remainingPayload;
+          if (end - start > 0) {
+            return this.execute(chunk.slice(start, end));
           }
         } else {
           this.buffer.push(chunk);
@@ -41382,12 +41382,12 @@ var require_column_definition = __commonJS({
     var addString = function(name) {
       Object.defineProperty(ColumnDefinition.prototype, name, {
         get: function() {
-          const start2 = this[`_${name}Start`];
-          const end = start2 + this[`_${name}Length`];
+          const start = this[`_${name}Start`];
+          const end = start + this[`_${name}Length`];
           const val = StringParser.decode(
             this._buf,
             this.encoding === "binary" ? this._clientEncoding : this.encoding,
-            start2,
+            start,
             end
           );
           Object.defineProperty(this, name, {
@@ -42765,13 +42765,13 @@ var require_compressed_protocol = __commonJS({
     }
     function writeCompressed(buffer) {
       const MAX_COMPRESSED_LENGTH = 16777210;
-      let start2;
+      let start;
       if (buffer.length > MAX_COMPRESSED_LENGTH) {
-        for (start2 = 0; start2 < buffer.length; start2 += MAX_COMPRESSED_LENGTH) {
+        for (start = 0; start < buffer.length; start += MAX_COMPRESSED_LENGTH) {
           writeCompressed.call(
             // eslint-disable-next-line no-invalid-this
             this,
-            buffer.slice(start2, start2 + MAX_COMPRESSED_LENGTH)
+            buffer.slice(start, start + MAX_COMPRESSED_LENGTH)
           );
         }
         return;
@@ -45937,8 +45937,8 @@ var require_lru_cache2 = __commonJS({
       initializeTTLTracking() {
         this.ttls = new ZeroArray(this.max);
         this.starts = new ZeroArray(this.max);
-        this.setItemTTL = (index, ttl, start2 = perf.now()) => {
-          this.starts[index] = ttl !== 0 ? start2 : 0;
+        this.setItemTTL = (index, ttl, start = perf.now()) => {
+          this.starts[index] = ttl !== 0 ? start : 0;
           this.ttls[index] = ttl;
           if (ttl !== 0 && this.ttlAutopurge) {
             const t = setTimeout(() => {
@@ -46213,7 +46213,7 @@ var require_lru_cache2 = __commonJS({
       }
       set(k, v, {
         ttl = this.ttl,
-        start: start2,
+        start,
         noDisposeOnSet = this.noDisposeOnSet,
         size = 0,
         sizeCalculation = this.sizeCalculation,
@@ -46275,7 +46275,7 @@ var require_lru_cache2 = __commonJS({
           this.initializeTTLTracking();
         }
         if (!noUpdateTTL) {
-          this.setItemTTL(index, ttl, start2);
+          this.setItemTTL(index, ttl, start);
         }
         this.statusTTL(status, index);
         if (this.disposeAfter) {
@@ -46719,7 +46719,7 @@ var require_named_placeholders = __commonJS({
     function parse(query) {
       let ppos = RE_PARAM.exec(query);
       let curpos = 0;
-      let start2 = 0;
+      let start = 0;
       let end;
       const parts = [];
       let inQuote = false;
@@ -46753,10 +46753,10 @@ var require_named_placeholders = __commonJS({
             }
           }
           if (!inQuote) {
-            parts.push(query.substring(start2, end));
+            parts.push(query.substring(start, end));
             tokens.push(ppos[0].length === 1 ? qcnt++ : ppos[1]);
-            start2 = end + ppos[0].length;
-            lastTokenEndPos = start2;
+            start = end + ppos[0].length;
+            lastTokenEndPos = start;
           }
           curpos = end + ppos[0].length;
         } while (ppos = RE_PARAM.exec(query));
@@ -47172,8 +47172,8 @@ var require_connection = __commonJS({
       }
       pipe() {
         if (this.stream instanceof Net.Stream) {
-          this.stream.ondata = (data, start2, end) => {
-            this.packetParser.execute(data, start2, end);
+          this.stream.ondata = (data, start, end) => {
+            this.packetParser.execute(data, start, end);
           };
         } else {
           this.stream.on("data", (data) => {
@@ -65722,21 +65722,32 @@ var env = {
   },
   dotenv: true
 };
-var start = async () => {
-  const server = https2;
-  await server.register(import_env.default, env);
-  server.register(import_mysql.default, {
-    connectionString: process.env.DB_URL
+var startHttp = async () => {
+  http2.get("*", (request, reply) => {
+    const url = `https://${request.headers.host}${request.raw.url}`;
+    reply.redirect(301, url);
   });
-  server.register(import_formbody.default);
-  server.register(routes);
-  server.listen({ port: process.env.PORT, host: "0.0.0.0" }, (err, address) => {
+  http2.listen({ port: 80, host: "0.0.0.0" }, (err, address) => {
     if (err) {
-      server.log.error(err);
+      http2.log.error(err);
     }
   });
 };
-start();
+var startHttps = async () => {
+  await https2.register(import_env.default, env);
+  https2.register(import_mysql.default, {
+    connectionString: process.env.DB_URL
+  });
+  https2.register(import_formbody.default);
+  https2.register(routes);
+  https2.listen({ port: 443, host: "0.0.0.0" }, (err, address) => {
+    if (err) {
+      https2.log.error(err);
+    }
+  });
+};
+startHttp();
+startHttps();
 /*! Bundled license information:
 
 uri-js/dist/es5/uri.all.js:

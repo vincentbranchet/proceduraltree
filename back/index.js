@@ -5,10 +5,11 @@ import fastifyFormbody from "@fastify/formbody"
 import routes from "./routes.js"
 import fs from "fs"
 
-const http = new Fastify({ 
+const http = new Fastify({
     logger: true,
 })
 
+// PROD
 const https = new Fastify({ 
     logger: true,
     https: {
@@ -16,6 +17,15 @@ const https = new Fastify({
         cert: fs.readFileSync('/etc/letsencrypt/live/monarbrevirtuel.com/fullchain.pem')
     }
 })
+
+// DEV
+// const https = new Fastify({
+//     logger: true,
+//     https: {
+//         key: fs.readFileSync('certificates/privkey.pem'),
+//         cert: fs.readFileSync('certificates/fullchain.pem')
+//     }
+// })
 
 const env = {
     schema: {
@@ -31,21 +41,35 @@ const env = {
     dotenv: true
 }
 
-const start = async () => {
-    const server = https
-    await server.register(fastifyEnv, env)
-
-    server.register(fastifyMysql, {
-        connectionString: process.env.DB_URL
+const startHttp = async () => {
+    // HTTP redirects to HTTPS
+    http.get('*', (request, reply) => {
+        const url = `https://${request.headers.host}${request.raw.url}`
+        reply.redirect(301, url)
     })
-    server.register(fastifyFormbody)
-    server.register(routes)
 
-    server.listen({ port: process.env.PORT, host: "0.0.0.0" }, (err, address) => {
+    http.listen({ port: 80, host: "0.0.0.0" }, (err, address) => {
         if (err) {
-            server.log.error(err)
+            http.log.error(err)
         }
     })
 }
 
-start()
+const startHttps = async () => {
+    await https.register(fastifyEnv, env)
+
+    https.register(fastifyMysql, {
+        connectionString: process.env.DB_URL
+    })
+    https.register(fastifyFormbody)
+    https.register(routes)
+
+    https.listen({ port: 443, host: "0.0.0.0" }, (err, address) => {
+        if (err) {
+            https.log.error(err)
+        }
+    })
+}
+
+startHttp()
+startHttps()
