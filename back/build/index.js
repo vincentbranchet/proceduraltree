@@ -65695,6 +65695,9 @@ Diane & Vincent`
       }
     );
   });
+  server.get("/robots.txt", (request, reply) => {
+    reply.code(404).send("Not found");
+  });
 }
 
 // back/index.js
