@@ -10,22 +10,22 @@ const http = new Fastify({
 })
 
 // PROD
-const https = new Fastify({ 
-    logger: true,
-    https: {
-        key: fs.readFileSync('/etc/letsencrypt/live/monarbrevirtuel.com/privkey.pem'),
-        cert: fs.readFileSync('/etc/letsencrypt/live/monarbrevirtuel.com/fullchain.pem')
-    }
-})
-
-// DEV
-// const https = new Fastify({
+// const https = new Fastify({ 
 //     logger: true,
 //     https: {
-//         key: fs.readFileSync('certificates/privkey.pem'),
-//         cert: fs.readFileSync('certificates/fullchain.pem')
+//         key: fs.readFileSync('/etc/letsencrypt/live/monarbrevirtuel.com/privkey.pem'),
+//         cert: fs.readFileSync('/etc/letsencrypt/live/monarbrevirtuel.com/fullchain.pem')
 //     }
 // })
+
+// DEV
+const https = new Fastify({
+    logger: true,
+    https: {
+        key: fs.readFileSync('certificates/privkey.pem'),
+        cert: fs.readFileSync('certificates/fullchain.pem')
+    }
+})
 
 const env = {
     schema: {

@@ -65708,8 +65708,8 @@ var http2 = new import_fastify.default({
 var https2 = new import_fastify.default({
   logger: true,
   https: {
-    key: import_fs2.default.readFileSync("/etc/letsencrypt/live/monarbrevirtuel.com/privkey.pem"),
-    cert: import_fs2.default.readFileSync("/etc/letsencrypt/live/monarbrevirtuel.com/fullchain.pem")
+    key: import_fs2.default.readFileSync("certificates/privkey.pem"),
+    cert: import_fs2.default.readFileSync("certificates/fullchain.pem")
   }
 });
 var env = {
