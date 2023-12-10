@@ -181,8 +181,8 @@ L'accès à cet arbre est libre et gratuit pour tout le monde, et le restera pou
     }
 
     nextAnimatedCoordinates(blueprint) {
-        const endX = blueprint.startNode.x + blueprint.length * Math.cos((blueprint.angle + (this.angleVariation * blueprint.depth / 10))) // TODO : risk of failed behavior if depth >>> 10
-        const endY = blueprint.startNode.y + blueprint.length * Math.sin((blueprint.angle + (this.angleVariation * blueprint.depth / 10))) // TODO : risk of failed behavior if depth >>> 10
+        const endX = blueprint.startNode.x + blueprint.length * Math.cos((blueprint.angle + (this.angleVariation * blueprint.depth / 20)))
+        const endY = blueprint.startNode.y + blueprint.length * Math.sin((blueprint.angle + (this.angleVariation * blueprint.depth / 20)))
         
         return {endX, endY}
     }

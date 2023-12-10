@@ -83,7 +83,7 @@
       this.animationPipe = [];
       this.blueprint = [];
       this.drawn = { value: 0 };
-      this.windStrength = 1;
+      this.windStrength = 0.5;
       this.windDirection = 1;
       this.windStep = this.windStrength / 10;
       this.windRange = { low: 0 + (1 - this.windStrength) / 2, high: 1 - (1 - this.windStrength) / 2 };
@@ -199,11 +199,10 @@ L'acc\xE8s \xE0 cet arbre est libre et gratuit pour tout le monde, et le restera
     }
     updateAngleVariation() {
       this.angleVariation += this.windDirection * this.windStep;
-      if (this.angleVariation >= this.windRange.high) {
+      if (this.angleVariation >= this.windRange.high)
         this.windDirection = -1;
-      } else if (this.angleVariation <= this.windRange.low) {
+      else if (this.angleVariation <= this.windRange.low)
         this.windDirection = 1;
-      }
     }
     buildAnimationTree() {
       let pipe = [];
@@ -223,8 +222,8 @@ L'acc\xE8s \xE0 cet arbre est libre et gratuit pour tout le monde, et le restera
       return branches;
     }
     nextAnimatedCoordinates(blueprint) {
-      const endX = blueprint.startNode.x + blueprint.length * Math.cos(blueprint.angle + this.angleVariation * blueprint.depth / 10);
-      const endY = blueprint.startNode.y + blueprint.length * Math.sin(blueprint.angle + this.angleVariation * blueprint.depth / 10);
+      const endX = blueprint.startNode.x + blueprint.length * Math.cos(blueprint.angle + this.angleVariation * blueprint.depth / 20);
+      const endY = blueprint.startNode.y + blueprint.length * Math.sin(blueprint.angle + this.angleVariation * blueprint.depth / 20);
       return { endX, endY };
     }
     getAnimationBranch(previous, current, endX, endY) {
