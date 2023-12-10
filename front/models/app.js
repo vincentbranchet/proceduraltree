@@ -149,10 +149,21 @@ L'accès à cet arbre est libre et gratuit pour tout le monde, et le restera pou
     updateAngleVariation() {
         this.angleVariation += this.windDirection * this.windStep
         
-        if(this.angleVariation >= this.windRange.high)
+        if(this.angleVariation >= this.windRange.high) {
+            this.updateWindRange()
             this.windDirection = -1
-        else if (this.angleVariation <= this.windRange.low)
+        }
+        else if (this.angleVariation <= this.windRange.low) {
+            this.updateWindRange()
             this.windDirection = 1
+        }
+    }
+
+    updateWindRange() {
+        this.windRange = {
+            low: 0 + ((1 - this.windStrength * Math.random()) / 2), 
+            high: 1 - ((1 - this.windStrength * Math.random()) / 2)
+        }
     }
 
     buildAnimationTree() {
