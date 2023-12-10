@@ -7,7 +7,11 @@ export class App {
         this.animationPipe = []
         this.blueprint = []
         this.drawn = { value: 0 }
-        this.windResistance = 5
+        this.windStrength = 0.5
+        this.windDirection = 1
+        this.windStep = this.windStrength / 10
+        this.windRange = {low: 0 + ((1 - this.windStrength) / 2), high: 1 - ((1 - this.windStrength) / 2)}
+        this.angleVariation = Math.random()
         this.lastFrameTime = null
         this.buildId = 0
         this.fps = 12 // TODO : browser crashes close to 24
@@ -129,8 +133,8 @@ L'accès à cet arbre est libre et gratuit pour tout le monde, et le restera pou
         if (delta > (1000 / this.fps)) {
             this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
 
-            const angleVariation = Math.random() * 1 / this.windResistance
-            const tree = this.buildAnimationTree(angleVariation)
+            this.updateAngleVariation()
+            const tree = this.buildAnimationTree()
 
             for (const branch of tree) {
                 this.draw(branch.x, branch.y, branch.endX, branch.endY, branch.color, branch.thickness, branch.leaf)
@@ -142,7 +146,16 @@ L'accès à cet arbre est libre et gratuit pour tout le monde, et le restera pou
         window.requestAnimationFrame(this.animate.bind(this))
     }
 
-    buildAnimationTree(angleVariation) {
+    updateAngleVariation() {
+        this.angleVariation += this.windDirection * this.windStep
+        
+        if(this.angleVariation >= this.windRange.high)
+            this.windDirection = -1
+        else if (this.angleVariation <= this.windRange.low)
+            this.windDirection = 1
+    }
+
+    buildAnimationTree() {
         let pipe = []
         let branches = []
 
@@ -150,7 +163,7 @@ L'accès à cet arbre est libre et gratuit pour tout le monde, et le restera pou
 
         while (pipe.length > 0) {
             const current = pipe[0]
-            const {endX, endY} = this.nextAnimatedCoordinates(current, angleVariation)
+            const {endX, endY} = this.nextAnimatedCoordinates(current, this.angleVariation)
             const previous = branches.find(branch => branch.id === current.prevId)
 
             branches.push(this.getAnimationBranch(previous, current, endX, endY))
@@ -167,9 +180,9 @@ L'accès à cet arbre est libre et gratuit pour tout le monde, et le restera pou
         return branches
     }
 
-    nextAnimatedCoordinates(blueprint, angleVariation) {
-        const endX = blueprint.startNode.x + blueprint.length * Math.cos((blueprint.angle + (angleVariation * blueprint.depth / 10))) // TODO : risk of failed behavior if depth >>> 10
-        const endY = blueprint.startNode.y + blueprint.length * Math.sin((blueprint.angle + (angleVariation * blueprint.depth / 10))) // TODO : risk of failed behavior if depth >>> 10
+    nextAnimatedCoordinates(blueprint) {
+        const endX = blueprint.startNode.x + blueprint.length * Math.cos((blueprint.angle + (this.angleVariation * blueprint.depth / 10))) // TODO : risk of failed behavior if depth >>> 10
+        const endY = blueprint.startNode.y + blueprint.length * Math.sin((blueprint.angle + (this.angleVariation * blueprint.depth / 10))) // TODO : risk of failed behavior if depth >>> 10
         
         return {endX, endY}
     }
