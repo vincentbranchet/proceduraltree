@@ -7,7 +7,7 @@ export class App {
         this.animationPipe = []
         this.blueprint = []
         this.drawn = { value: 0 }
-        this.windStrength = 0.5
+        this.windStrength = 0.4
         this.windDirection = 1
         this.windStep = this.windStrength / 10
         this.windRange = {low: 0 + ((1 - this.windStrength) / 2), high: 1 - ((1 - this.windStrength) / 2)}
@@ -192,10 +192,18 @@ L'accès à cet arbre est libre et gratuit pour tout le monde, et le restera pou
     }
 
     nextAnimatedCoordinates(blueprint) {
-        const endX = blueprint.startNode.x + blueprint.length * Math.cos((blueprint.angle + (this.angleVariation * blueprint.depth / 20)))
-        const endY = blueprint.startNode.y + blueprint.length * Math.sin((blueprint.angle + (this.angleVariation * blueprint.depth / 20)))
+        const endX = blueprint.startNode.x + blueprint.length * Math.cos(this.getAngle(blueprint))
+        const endY = blueprint.startNode.y + blueprint.length * Math.sin(this.getAngle(blueprint))
         
         return {endX, endY}
+    }
+
+    getAngle(branch) {
+        return branch.angle + (this.angleVariation * Math.pow(this.normalise(branch.depth), 2))
+    }
+
+    normalise(depth) {
+        return (Math.min(Math.max(depth, 0), 1) - 0) / (1 - 0)
     }
 
     getAnimationBranch(previous, current, endX, endY) {
